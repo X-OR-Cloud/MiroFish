@@ -88,7 +88,7 @@ const projectData = ref(null)
 const graphData = ref(null)
 const graphLoading = ref(false)
 const systemLogs = ref([])
-const currentStatus = ref('processing') // processing | completed | error
+const currentStatus = ref('processing') // đang xử lý | hoàn thành | lỗi
 
 // --- Computed Layout Styles ---
 const leftPanelStyle = computed(() => {
@@ -137,7 +137,7 @@ const toggleMaximize = (target) => {
 }
 
 const handleGoBack = () => {
-  // 返回到 process 页面
+  // Quay lại trang process
   if (projectData.value?.project_id) {
     router.push({ name: 'Process', params: { projectId: projectData.value.project_id } })
   } else {
@@ -146,81 +146,81 @@ const handleGoBack = () => {
 }
 
 const handleNextStep = (params = {}) => {
-  addLog('进入 Step 3: 开始模拟')
+  addLog('Nhập Step 3: Bắt đầu mô phỏng')
   
-  // 记录模拟轮数配置
+  // Ghi lại cấu hình số vòng mô phỏng
   if (params.maxRounds) {
-    addLog(`自定义模拟轮数: ${params.maxRounds} 轮`)
+    addLog(`Số vòng mô phỏng tùy chỉnh: ${params.maxRounds} vòng`)
   } else {
-    addLog('使用自动配置的模拟轮数')
+    addLog('Sử dụng số vòng mô phỏng được cấu hình tự động')
   }
   
-  // 构建路由参数
+  // Xây dựng tham số bộ định tuyến
   const routeParams = {
     name: 'SimulationRun',
     params: { simulationId: currentSimulationId.value }
   }
   
-  // 如果有自定义轮数，通过 query 参数传递
+  // Nếu có số vòng tùy chỉnh, chuyển qua tham số query
   if (params.maxRounds) {
     routeParams.query = { maxRounds: params.maxRounds }
   }
   
-  // 跳转到 Step 3 页面
+  // Chuyển hướng đến trang Step 3
   router.push(routeParams)
 }
 
 // --- Data Logic ---
 
 /**
- * 检查并关闭正在运行的模拟
- * 当用户从 Step 3 返回到 Step 2 时，默认用户要退出模拟
+ * Kiểm tra và đóng mô phỏng đang chạy
+ * Khi người dùng quay lại từ Step 3 đến Step 2, giả định người dùng muốn thoát khỏi mô phỏng
  */
 const checkAndStopRunningSimulation = async () => {
   if (!currentSimulationId.value) return
   
   try {
-    // 先检查模拟环境是否存活
+    // Trước tiên kiểm tra xem môi trường mô phỏng có còn sống hay không
     const envStatusRes = await getEnvStatus({ simulation_id: currentSimulationId.value })
     
     if (envStatusRes.success && envStatusRes.data?.env_alive) {
-      addLog('检测到模拟环境正在运行，正在关闭...')
+      addLog('Phát hiện môi trường mô phỏng đang chạy, đang đóng...')
       
-      // 尝试优雅关闭模拟环境
+      // Cố gắng đóng môi trường mô phỏng một cách nhuyễn
       try {
         const closeRes = await closeSimulationEnv({ 
           simulation_id: currentSimulationId.value,
-          timeout: 10  // 10秒超时
+          timeout: 10  // Hết thời gian chờ 10 giây
         })
         
         if (closeRes.success) {
           addLog('✓ 模拟环境已关闭')
         } else {
           addLog(`关闭模拟环境失败: ${closeRes.error || '未知错误'}`)
-          // 如果优雅关闭失败，尝试强制停止
+          // Nếu đóng nhuyễn thất bại, hãy cố gắng dừng cứng
           await forceStopSimulation()
         }
       } catch (closeErr) {
         addLog(`关闭模拟环境异常: ${closeErr.message}`)
-        // 如果优雅关闭异常，尝试强制停止
+        // Nếu đóng nhuyễn bị ngoại lệ, hãy cố gắng dừng cứng
         await forceStopSimulation()
       }
     } else {
-      // 环境未运行，但可能进程还在，检查模拟状态
+      // Môi trường không chạy, nhưng tiến trình có thể vẫn tồn tại, kiểm tra trạng thái mô phỏng
       const simRes = await getSimulation(currentSimulationId.value)
       if (simRes.success && simRes.data?.status === 'running') {
-        addLog('检测到模拟状态为运行中，正在停止...')
+        addLog('Phát hiện trạng thái mô phỏng đang chạy, đang dừng...')
         await forceStopSimulation()
       }
     }
   } catch (err) {
-    // 检查环境状态失败不影响后续流程
-    console.warn('检查模拟状态失败:', err)
+    // Kiểm tra lỗi trạng thái môi trường không ảnh hưởng đến quy trình tiếp theo
+    console.warn('Lỗi kiểm tra trạng thái mô phỏng:', err)
   }
 }
 
 /**
- * 强制停止模拟
+ * Dừng cứng mô phỏng
  */
 const forceStopSimulation = async () => {
   try {
@@ -239,26 +239,26 @@ const loadSimulationData = async () => {
   try {
     addLog(`加载模拟数据: ${currentSimulationId.value}`)
     
-    // 获取 simulation 信息
+    // Lấy thông tin mô phỏng
     const simRes = await getSimulation(currentSimulationId.value)
     if (simRes.success && simRes.data) {
       const simData = simRes.data
       
-      // 获取 project 信息
+      // Lấy thông tin dự án
       if (simData.project_id) {
         const projRes = await getProject(simData.project_id)
         if (projRes.success && projRes.data) {
           projectData.value = projRes.data
           addLog(`项目加载成功: ${projRes.data.project_id}`)
           
-          // 获取 graph 数据
+          // Lấy dữ liệu đồ thị
           if (projRes.data.graph_id) {
             await loadGraph(projRes.data.graph_id)
           }
         }
       }
     } else {
-      addLog(`加载模拟数据失败: ${simRes.error || '未知错误'}`)
+      addLog(`Tải dữ liệu mô phỏng thất bại: ${simRes.error || 'lỗi không xác định'}`)
     }
   } catch (err) {
     addLog(`加载异常: ${err.message}`)
@@ -287,12 +287,12 @@ const refreshGraph = () => {
 }
 
 onMounted(async () => {
-  addLog('SimulationView 初始化')
+  addLog('Khởi tạo SimulationView')
   
-  // 检查并关闭正在运行的模拟（用户从 Step 3 返回时）
+  // Kiểm tra và đóng mô phỏng đang chạy (khi người dùng quay lại từ Step 3)
   await checkAndStopRunningSimulation()
   
-  // 加载模拟数据
+  // Tải dữ liệu mô phỏng
   loadSimulationData()
 })
 </script>

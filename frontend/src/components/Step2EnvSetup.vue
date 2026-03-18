@@ -1,23 +1,23 @@
 <template>
   <div class="env-setup-panel">
     <div class="scroll-container">
-      <!-- Step 01: 模拟实例 -->
+      <!-- Step 01: Phiên bản mô phỏng -->
       <div class="step-card" :class="{ 'active': phase === 0, 'completed': phase > 0 }">
         <div class="card-header">
           <div class="step-info">
             <span class="step-num">01</span>
-            <span class="step-title">模拟实例初始化</span>
+            <span class="step-title">Khởi tạo phiên bản mô phỏng</span>
           </div>
           <div class="step-status">
-            <span v-if="phase > 0" class="badge success">已完成</span>
-            <span v-else class="badge processing">初始化</span>
+            <span v-if="phase > 0" class="badge success">Đã hoàn thành</span>
+            <span v-else class="badge processing">Khởi tạo</span>
           </div>
         </div>
         
         <div class="card-content">
           <p class="api-note">POST /api/simulation/create</p>
           <p class="description">
-            新建simulation实例，拉取模拟世界参数模版
+            Tạo phiên bản simulation mới, tải xuống mẫu tham số thế giới mô phỏng
           </p>
 
           <div v-if="simulationId" class="info-card">
@@ -35,52 +35,52 @@
             </div>
             <div class="info-row">
               <span class="info-label">Task ID</span>
-              <span class="info-value mono">{{ taskId || '异步任务已完成' }}</span>
+              <span class="info-value mono">{{ taskId || 'Tác vụ không đồng bộ đã hoàn thành' }}</span>
             </div>
           </div>
         </div>
       </div>
 
-      <!-- Step 02: 生成 Agent 人设 -->
+      <!-- Step 02: Tạo nhân vật Agent -->
       <div class="step-card" :class="{ 'active': phase === 1, 'completed': phase > 1 }">
         <div class="card-header">
           <div class="step-info">
             <span class="step-num">02</span>
-            <span class="step-title">生成 Agent 人设</span>
+            <span class="step-title">Tạo nhân vật Agent</span>
           </div>
           <div class="step-status">
-            <span v-if="phase > 1" class="badge success">已完成</span>
+            <span v-if="phase > 1" class="badge success">Đã hoàn thành</span>
             <span v-else-if="phase === 1" class="badge processing">{{ prepareProgress }}%</span>
-            <span v-else class="badge pending">等待</span>
+            <span v-else class="badge pending">Chờ</span>
           </div>
         </div>
 
         <div class="card-content">
           <p class="api-note">POST /api/simulation/prepare</p>
           <p class="description">
-            结合上下文，自动调用工具从知识图谱梳理实体与关系，初始化模拟个体，并基于现实种子赋予他们独特的行为与记忆
+            Kết hợp với bối cảnh, tự động gọi công cụ để cấu trúc các thực thể và quan hệ từ đồ thị kiến thức, khởi tạo cá nhân mô phỏng, và trao cho họ những hành vi và ký ức độc đáo dựa trên hạt giống thực tế
           </p>
 
           <!-- Profiles Stats -->
           <div v-if="profiles.length > 0" class="stats-grid">
             <div class="stat-card">
               <span class="stat-value">{{ profiles.length }}</span>
-              <span class="stat-label">当前Agent数</span>
+              <span class="stat-label">Số Agent hiện tại</span>
             </div>
             <div class="stat-card">
               <span class="stat-value">{{ expectedTotal || '-' }}</span>
-              <span class="stat-label">预期Agent总数</span>
+              <span class="stat-label">Tổng số Agent dự kiến</span>
             </div>
             <div class="stat-card">
               <span class="stat-value">{{ totalTopicsCount }}</span>
-              <span class="stat-label">现实种子当前关联话题数</span>
+              <span class="stat-label">Số chủ đề hiện tại liên quan đến hạt giống thực tế</span>
             </div>
           </div>
 
           <!-- Profiles List Preview -->
           <div v-if="profiles.length > 0" class="profiles-preview">
             <div class="preview-header">
-              <span class="preview-title">已生成的 Agent 人设</span>
+              <span class="preview-title">Nhân vật Agent đã được tạo</span>
             </div>
             <div class="profiles-list">
               <div 
@@ -94,9 +94,9 @@
                   <span class="profile-username">@{{ profile.name || `agent_${idx}` }}</span>
                 </div>
                 <div class="profile-meta">
-                  <span class="profile-profession">{{ profile.profession || '未知职业' }}</span>
+                  <span class="profile-profession">{{ profile.profession || 'Nghề nghiệp không xác định' }}</span>
                 </div>
-                <p class="profile-bio">{{ profile.bio || '暂无简介' }}</p>
+                <p class="profile-bio">{{ profile.bio || 'Tạm thời không có tiểu sử' }}</p>
                 <div v-if="profile.interested_topics?.length" class="profile-topics">
                   <span 
                     v-for="topic in profile.interested_topics.slice(0, 3)" 
@@ -113,77 +113,77 @@
         </div>
       </div>
 
-      <!-- Step 03: 生成双平台模拟配置 -->
+      <!-- Step 03: Tạo cấu hình mô phỏng hai nền tảng -->
       <div class="step-card" :class="{ 'active': phase === 2, 'completed': phase > 2 }">
         <div class="card-header">
           <div class="step-info">
             <span class="step-num">03</span>
-            <span class="step-title">生成双平台模拟配置</span>
+            <span class="step-title">Tạo cấu hình mô phỏng hai nền tảng</span>
           </div>
           <div class="step-status">
-            <span v-if="phase > 2" class="badge success">已完成</span>
-            <span v-else-if="phase === 2" class="badge processing">生成中</span>
-            <span v-else class="badge pending">等待</span>
+            <span v-if="phase > 2" class="badge success">Đã hoàn thành</span>
+            <span v-else-if="phase === 2" class="badge processing">Đang tạo</span>
+            <span v-else class="badge pending">Chờ</span>
           </div>
         </div>
 
         <div class="card-content">
           <p class="api-note">POST /api/simulation/prepare</p>
           <p class="description">
-            LLM 根据模拟需求与现实种子，智能设置世界时间流速、推荐算法、每个个体的活跃时间段、发言频率、事件触发等参数
+            LLM dựa trên yêu cầu mô phỏng và hạt giống thực tế, thông minh đặt tốc độ dòng thời gian thế giới, thuật toán đề xuất, khoảng thời gian hoạt động của từng cá nhân, tần suất phát biểu, các tham số kích hoạt sự kiện, v.v.
           </p>
           
           <!-- Config Preview -->
           <div v-if="simulationConfig" class="config-detail-panel">
-            <!-- 时间配置 -->
+            <!-- Cấu hình thời gian -->
             <div class="config-block">
               <div class="config-grid">
                 <div class="config-item">
-                  <span class="config-item-label">模拟时长</span>
-                  <span class="config-item-value">{{ simulationConfig.time_config?.total_simulation_hours || '-' }} 小时</span>
+                  <span class="config-item-label">Thời lượng mô phỏng</span>
+                  <span class="config-item-value">{{ simulationConfig.time_config?.total_simulation_hours || '-' }} giờ</span>
                 </div>
                 <div class="config-item">
-                  <span class="config-item-label">每轮时长</span>
-                  <span class="config-item-value">{{ simulationConfig.time_config?.minutes_per_round || '-' }} 分钟</span>
+                  <span class="config-item-label">Thời lượng mỗi vòng</span>
+                  <span class="config-item-value">{{ simulationConfig.time_config?.minutes_per_round || '-' }} phút</span>
                 </div>
                 <div class="config-item">
-                  <span class="config-item-label">总轮次</span>
-                  <span class="config-item-value">{{ Math.floor((simulationConfig.time_config?.total_simulation_hours * 60 / simulationConfig.time_config?.minutes_per_round)) || '-' }} 轮</span>
+                  <span class="config-item-label">Tổng số vòng</span>
+                  <span class="config-item-value">{{ Math.floor((simulationConfig.time_config?.total_simulation_hours * 60 / simulationConfig.time_config?.minutes_per_round)) || '-' }} vòng</span>
                 </div>
                 <div class="config-item">
-                  <span class="config-item-label">每小时活跃</span>
+                  <span class="config-item-label">Hoạt động mỗi giờ</span>
                   <span class="config-item-value">{{ simulationConfig.time_config?.agents_per_hour_min }}-{{ simulationConfig.time_config?.agents_per_hour_max }}</span>
                 </div>
               </div>
               <div class="time-periods">
                 <div class="period-item">
-                  <span class="period-label">高峰时段</span>
+                  <span class="period-label">Thời đỉnh</span>
                   <span class="period-hours">{{ simulationConfig.time_config?.peak_hours?.join(':00, ') }}:00</span>
                   <span class="period-multiplier">×{{ simulationConfig.time_config?.peak_activity_multiplier }}</span>
                 </div>
                 <div class="period-item">
-                  <span class="period-label">工作时段</span>
+                  <span class="period-label">Giờ làm việc</span>
                   <span class="period-hours">{{ simulationConfig.time_config?.work_hours?.[0] }}:00-{{ simulationConfig.time_config?.work_hours?.slice(-1)[0] }}:00</span>
                   <span class="period-multiplier">×{{ simulationConfig.time_config?.work_activity_multiplier }}</span>
                 </div>
                 <div class="period-item">
-                  <span class="period-label">早间时段</span>
+                  <span class="period-label">Giờ buổi sáng</span>
                   <span class="period-hours">{{ simulationConfig.time_config?.morning_hours?.[0] }}:00-{{ simulationConfig.time_config?.morning_hours?.slice(-1)[0] }}:00</span>
                   <span class="period-multiplier">×{{ simulationConfig.time_config?.morning_activity_multiplier }}</span>
                 </div>
                 <div class="period-item">
-                  <span class="period-label">低谷时段</span>
+                  <span class="period-label">Giờ thấp điểm</span>
                   <span class="period-hours">{{ simulationConfig.time_config?.off_peak_hours?.[0] }}:00-{{ simulationConfig.time_config?.off_peak_hours?.slice(-1)[0] }}:00</span>
                   <span class="period-multiplier">×{{ simulationConfig.time_config?.off_peak_activity_multiplier }}</span>
                 </div>
               </div>
             </div>
 
-            <!-- Agent 配置 -->
+            <!-- Cấu hình Agent -->
             <div class="config-block">
               <div class="config-block-header">
-                <span class="config-block-title">Agent 配置</span>
-                <span class="config-block-badge">{{ simulationConfig.agent_configs?.length || 0 }} 个</span>
+                <span class="config-block-title">Cấu hình Agent</span>
+                <span class="config-block-badge">{{ simulationConfig.agent_configs?.length || 0 }} cái</span>
               </div>
               <div class="agents-cards">
                 <div 
@@ -191,7 +191,7 @@
                   :key="agent.agent_id" 
                   class="agent-card"
                 >
-                  <!-- 卡片头部 -->
+                  <!-- Tiêu đề thẻ -->
                   <div class="agent-card-header">
                     <div class="agent-identity">
                       <span class="agent-id">Agent {{ agent.agent_id }}</span>
@@ -203,9 +203,9 @@
                     </div>
                   </div>
                   
-                  <!-- 活跃时间轴 -->
+                  <!-- Dòng thái thời gian hoạt động -->
                   <div class="agent-timeline">
-                    <span class="timeline-label">活跃时段</span>
+                    <span class="timeline-label">Thời gian hoạt động</span>
                     <div class="mini-timeline">
                       <div 
                         v-for="hour in 24" 
@@ -224,38 +224,38 @@
                     </div>
                   </div>
 
-                  <!-- 行为参数 -->
+                  <!-- Các tham số hành vi -->
                   <div class="agent-params">
                     <div class="param-group">
                       <div class="param-item">
-                        <span class="param-label">发帖/时</span>
+                        <span class="param-label">Bài viết/giờ</span>
                         <span class="param-value">{{ agent.posts_per_hour }}</span>
                       </div>
                       <div class="param-item">
-                        <span class="param-label">评论/时</span>
+                        <span class="param-label">Bình luận/giờ</span>
                         <span class="param-value">{{ agent.comments_per_hour }}</span>
                       </div>
                       <div class="param-item">
-                        <span class="param-label">响应延迟</span>
+                        <span class="param-label">Độ trễ phản hồi</span>
                         <span class="param-value">{{ agent.response_delay_min }}-{{ agent.response_delay_max }}min</span>
                       </div>
                     </div>
                     <div class="param-group">
                       <div class="param-item">
-                        <span class="param-label">活跃度</span>
+                        <span class="param-label">Mức độ hoạt động</span>
                         <span class="param-value with-bar">
                           <span class="mini-bar" :style="{ width: (agent.activity_level * 100) + '%' }"></span>
                           {{ (agent.activity_level * 100).toFixed(0) }}%
                         </span>
                       </div>
                       <div class="param-item">
-                        <span class="param-label">情感倾向</span>
+                        <span class="param-label">Xu hướng cảm xúc</span>
                         <span class="param-value" :class="agent.sentiment_bias > 0 ? 'positive' : agent.sentiment_bias < 0 ? 'negative' : 'neutral'">
                           {{ agent.sentiment_bias > 0 ? '+' : '' }}{{ agent.sentiment_bias?.toFixed(1) }}
                         </span>
                       </div>
                       <div class="param-item">
-                        <span class="param-label">影响力</span>
+                        <span class="param-label">Ảnh hưởng</span>
                         <span class="param-value highlight">{{ agent.influence_weight?.toFixed(1) }}</span>
                       </div>
                     </div>
@@ -264,62 +264,62 @@
               </div>
             </div>
 
-            <!-- 平台配置 -->
+            <!-- Cấu hình nền tảng -->
             <div class="config-block">
               <div class="config-block-header">
-                <span class="config-block-title">推荐算法配置</span>
+                <span class="config-block-title">Cấu hình thuật toán đề xuất</span>
               </div>
               <div class="platforms-grid">
                 <div v-if="simulationConfig.twitter_config" class="platform-card">
                   <div class="platform-card-header">
-                    <span class="platform-name">平台 1：广场 / 信息流</span>
+                    <span class="platform-name">Nền tảng 1: Quảng trường / Luồng thông tin</span>
                   </div>
                   <div class="platform-params">
                     <div class="param-row">
-                      <span class="param-label">时效权重</span>
+                      <span class="param-label">Trọng số tính kịp thời</span>
                       <span class="param-value">{{ simulationConfig.twitter_config.recency_weight }}</span>
                     </div>
                     <div class="param-row">
-                      <span class="param-label">热度权重</span>
+                      <span class="param-label">Trọng số độ phổ biến</span>
                       <span class="param-value">{{ simulationConfig.twitter_config.popularity_weight }}</span>
                     </div>
                     <div class="param-row">
-                      <span class="param-label">相关性权重</span>
+                      <span class="param-label">Trọng số mức độ liên quan</span>
                       <span class="param-value">{{ simulationConfig.twitter_config.relevance_weight }}</span>
                     </div>
                     <div class="param-row">
-                      <span class="param-label">病毒阈值</span>
+                      <span class="param-label">Ngưỡng lan truyền</span>
                       <span class="param-value">{{ simulationConfig.twitter_config.viral_threshold }}</span>
                     </div>
                     <div class="param-row">
-                      <span class="param-label">回音室强度</span>
+                      <span class="param-label">Cường độ phòng vọng lại</span>
                       <span class="param-value">{{ simulationConfig.twitter_config.echo_chamber_strength }}</span>
                     </div>
                   </div>
                 </div>
                 <div v-if="simulationConfig.reddit_config" class="platform-card">
                   <div class="platform-card-header">
-                    <span class="platform-name">平台 2：话题 / 社区</span>
+                    <span class="platform-name">Nền tảng 2: Chủ đề / Cộng đồng</span>
                   </div>
                   <div class="platform-params">
                     <div class="param-row">
-                      <span class="param-label">时效权重</span>
+                      <span class="param-label">Trọng số tính kịp thời</span>
                       <span class="param-value">{{ simulationConfig.reddit_config.recency_weight }}</span>
                     </div>
                     <div class="param-row">
-                      <span class="param-label">热度权重</span>
+                      <span class="param-label">Trọng số độ phổ biến</span>
                       <span class="param-value">{{ simulationConfig.reddit_config.popularity_weight }}</span>
                     </div>
                     <div class="param-row">
-                      <span class="param-label">相关性权重</span>
+                      <span class="param-label">Trọng số mức độ liên quan</span>
                       <span class="param-value">{{ simulationConfig.reddit_config.relevance_weight }}</span>
                     </div>
                     <div class="param-row">
-                      <span class="param-label">病毒阈值</span>
+                      <span class="param-label">Ngưỡng lan truyền</span>
                       <span class="param-value">{{ simulationConfig.reddit_config.viral_threshold }}</span>
                     </div>
                     <div class="param-row">
-                      <span class="param-label">回音室强度</span>
+                      <span class="param-label">Cường độ phòng vọng lại</span>
                       <span class="param-value">{{ simulationConfig.reddit_config.echo_chamber_strength }}</span>
                     </div>
                   </div>
@@ -327,10 +327,10 @@
               </div>
             </div>
 
-            <!-- LLM 配置推理 -->
+            <!-- Suy luận cấu hình LLM -->
             <div v-if="simulationConfig.generation_reasoning" class="config-block">
               <div class="config-block-header">
-                <span class="config-block-title">LLM 配置推理</span>
+                <span class="config-block-title">Suy luận cấu hình LLM</span>
               </div>
               <div class="reasoning-content">
                 <div 
@@ -346,24 +346,24 @@
         </div>
       </div>
 
-      <!-- Step 04: 初始激活编排 -->
+      <!-- Step 04: Sắp xếp kích hoạt ban đầu -->
       <div class="step-card" :class="{ 'active': phase === 3, 'completed': phase > 3 }">
         <div class="card-header">
           <div class="step-info">
             <span class="step-num">04</span>
-            <span class="step-title">初始激活编排</span>
+            <span class="step-title">Sắp xếp kích hoạt ban đầu</span>
           </div>
           <div class="step-status">
-            <span v-if="phase > 3" class="badge success">已完成</span>
-            <span v-else-if="phase === 3" class="badge processing">编排中</span>
-            <span v-else class="badge pending">等待</span>
+            <span v-if="phase > 3" class="badge success">Đã hoàn thành</span>
+            <span v-else-if="phase === 3" class="badge processing">Đang sắp xếp</span>
+            <span v-else class="badge pending">Đang chờ</span>
           </div>
         </div>
 
         <div class="card-content">
           <p class="api-note">POST /api/simulation/prepare</p>
           <p class="description">
-            基于叙事方向，自动生成初始激活事件与热点话题，引导模拟世界的初始状态
+            Dựa trên hướng kịch bản, tự động tạo ra các sự kiện kích hoạt ban đầu và các chủ đề nóng, hướng dẫn trạng thái ban đầu của thế giới mô phỏng
           </p>
 
           <div v-if="simulationConfig?.event_config" class="orchestration-content">
@@ -380,14 +380,14 @@
                     </linearGradient>
                   </defs>
                 </svg>
-                叙事引导方向
+                Hướng dẫn kịch bản
               </span>
               <p class="narrative-text">{{ simulationConfig.event_config.narrative_direction }}</p>
             </div>
 
-            <!-- 热点话题 -->
+            <!-- Chủ đề nóng -->
             <div class="topics-section">
-              <span class="box-label">初始热点话题</span>
+              <span class="box-label">Chủ đề nóng ban đầu</span>
               <div class="hot-topics-grid">
                 <span v-for="topic in simulationConfig.event_config.hot_topics" :key="topic" class="hot-topic-tag">
                   # {{ topic }}
@@ -395,9 +395,9 @@
               </div>
             </div>
 
-            <!-- 初始帖子流 -->
+            <!-- Luồng bài viết ban đầu -->
             <div class="initial-posts-section">
-              <span class="box-label">初始激活序列 ({{ simulationConfig.event_config.initial_posts.length }})</span>
+              <span class="box-label">Chuỗi kích hoạt ban đầu ({{ simulationConfig.event_config.initial_posts.length }})</span>
               <div class="posts-timeline">
                 <div v-for="(post, idx) in simulationConfig.event_config.initial_posts" :key="idx" class="timeline-item">
                   <div class="timeline-marker"></div>
@@ -418,34 +418,34 @@
         </div>
       </div>
 
-      <!-- Step 05: 准备完成 -->
+      <!-- Step 05: Chuẩn bị xong -->
       <div class="step-card" :class="{ 'active': phase === 4 }">
         <div class="card-header">
           <div class="step-info">
             <span class="step-num">05</span>
-            <span class="step-title">准备完成</span>
+            <span class="step-title">Chuẩn bị xong</span>
           </div>
           <div class="step-status">
-            <span v-if="phase >= 4" class="badge processing">进行中</span>
-            <span v-else class="badge pending">等待</span>
+            <span v-if="phase >= 4" class="badge processing">Đang tiến hành</span>
+            <span v-else class="badge pending">Đang chờ</span>
           </div>
         </div>
 
         <div class="card-content">
           <p class="api-note">POST /api/simulation/start</p>
-          <p class="description">模拟环境已准备完成，可以开始运行模拟</p>
+          <p class="description">Môi trường mô phỏng đã sẵn sàng, bạn có thể bắt đầu chạy mô phỏng</p>
           
-          <!-- 模拟轮数配置 - 只有在配置生成完成且轮数计算出来后才显示 -->
+          <!-- Cấu hình số vòng mô phỏng - chỉ hiển thị sau khi cấu hình được tạo và số vòng được tính toán -->
           <div v-if="simulationConfig && autoGeneratedRounds" class="rounds-config-section">
             <div class="rounds-header">
               <div class="header-left">
-                <span class="section-title">模拟轮数设定</span>
-                <span class="section-desc">MiroFish 自动规划推演现实 <span class="desc-highlight">{{ simulationConfig?.time_config?.total_simulation_hours || '-' }}</span> 小时，每轮代表现实 <span class="desc-highlight">{{ simulationConfig?.time_config?.minutes_per_round || '-' }}</span> 分钟时间流逝</span>
+                <span class="section-title">Cài đặt số vòng mô phỏng</span>
+                <span class="section-desc">MiroFish tự động lên kế hoạch mô phỏng <span class="desc-highlight">{{ simulationConfig?.time_config?.total_simulation_hours || '-' }}</span> giờ, mỗi vòng đại diện cho <span class="desc-highlight">{{ simulationConfig?.time_config?.minutes_per_round || '-' }}</span> phút thời gian trôi qua</span>
               </div>
               <label class="switch-control">
                 <input type="checkbox" v-model="useCustomRounds">
                 <span class="switch-track"></span>
-                <span class="switch-label">自定义</span>
+                <span class="switch-label">Tùy chỉnh</span>
               </label>
             </div>
             
@@ -454,10 +454,10 @@
                 <div class="slider-display">
                   <div class="slider-main-value">
                     <span class="val-num">{{ customMaxRounds }}</span>
-                    <span class="val-unit">轮</span>
+                    <span class="val-unit">vòng</span>
                   </div>
                   <div class="slider-meta-info">
-                    <span>若Agent规模为100：预计耗时约 {{ Math.round(customMaxRounds * 0.6) }} 分钟</span>
+                    <span>Nếu quy mô Agent là 100: Dự kiến mất khoảng {{ Math.round(customMaxRounds * 0.6) }} phút</span>
                   </div>
                 </div>
 
@@ -474,11 +474,11 @@
                   <div class="range-marks">
                     <span>10</span>
                     <span 
-                      class="mark-recommend" 
+                      class="mark-recommend"
                       :class="{ active: customMaxRounds === 40 }"
                       @click="customMaxRounds = 40"
                       :style="{ position: 'absolute', left: `calc(${(40 - 10) / (autoGeneratedRounds - 10) * 100}% - 30px)` }"
-                    >40 (推荐)</span>
+                    >40 (Đề xuất)</span>
                     <span>{{ autoGeneratedRounds }}</span>
                   </div>
                 </div>
@@ -488,7 +488,7 @@
                 <div class="auto-info-card">
                   <div class="auto-value">
                     <span class="val-num">{{ autoGeneratedRounds }}</span>
-                    <span class="val-unit">轮</span>
+                    <span class="val-unit">vòng</span>
                   </div>
                   <div class="auto-content">
                     <div class="auto-meta-row">
@@ -497,11 +497,11 @@
                           <circle cx="12" cy="12" r="10"></circle>
                           <polyline points="12 6 12 12 16 14"></polyline>
                         </svg>
-                        若Agent规模为100：预计耗时 {{ Math.round(autoGeneratedRounds * 0.6) }} 分钟
+                        Nếu quy mô Agent là 100: Dự kiến mất {{ Math.round(autoGeneratedRounds * 0.6) }} phút
                       </span>
                     </div>
                     <div class="auto-desc">
-                      <p class="highlight-tip" @click="useCustomRounds = true">若首次运行，强烈建议切换至‘自定义模式’减少模拟轮数，以便快速预览效果并降低报错风险 ➝</p>
+                      <p class="highlight-tip" @click="useCustomRounds = true">Nếu lần đầu chạy, bạn nên chuyển sang ‘Chế độ tùy chỉnh’ để giảm số vòng mô phỏng, nhanh chóng xem trước hiệu quả và giảm rủi ro lỗi ➝</p>
                     </div>
                   </div>
                 </div>
@@ -510,18 +510,18 @@
           </div>
 
           <div class="action-group dual">
-            <button 
+            <button
               class="action-btn secondary"
               @click="$emit('go-back')"
             >
-              ← 返回图谱构建
+              ← Quay lại xây dựng đồ thị
             </button>
-            <button 
+            <button
               class="action-btn primary"
               :disabled="phase < 4"
               @click="handleStartSimulation"
             >
-              开始双世界并行模拟 ➝
+              Bắt đầu mô phỏng song song hai thế giới ➝
             </button>
           </div>
         </div>
@@ -544,35 +544,35 @@
         </div>
         
         <div class="modal-body">
-          <!-- 基本信息 -->
+          <!-- Thông tin cơ bản -->
           <div class="modal-info-grid">
             <div class="info-item">
-              <span class="info-label">事件外显年龄</span>
-              <span class="info-value">{{ selectedProfile.age || '-' }} 岁</span>
+              <span class="info-label">Tuổi hiển thị sự kiện</span>
+              <span class="info-value">{{ selectedProfile.age || '-' }} tuổi</span>
             </div>
             <div class="info-item">
-              <span class="info-label">事件外显性别</span>
-              <span class="info-value">{{ { male: '男', female: '女', other: '其他' }[selectedProfile.gender] || selectedProfile.gender }}</span>
+              <span class="info-label">Giới tính hiển thị sự kiện</span>
+              <span class="info-value">{{ { male: 'Nam', female: 'Nữ', other: 'Khác' }[selectedProfile.gender] || selectedProfile.gender }}</span>
             </div>
             <div class="info-item">
-              <span class="info-label">国家/地区</span>
+              <span class="info-label">Quốc gia/Khu vực</span>
               <span class="info-value">{{ selectedProfile.country || '-' }}</span>
             </div>
             <div class="info-item">
-              <span class="info-label">事件外显MBTI</span>
+              <span class="info-label">MBTI hiển thị sự kiện</span>
               <span class="info-value mbti">{{ selectedProfile.mbti || '-' }}</span>
             </div>
           </div>
 
-          <!-- 简介 -->
+          <!-- Giới thiệu -->
           <div class="modal-section">
-            <span class="section-label">人设简介</span>
-            <p class="section-bio">{{ selectedProfile.bio || '暂无简介' }}</p>
+            <span class="section-label">Giới thiệu nhân vật</span>
+            <p class="section-bio">{{ selectedProfile.bio || 'Không có giới thiệu' }}</p>
           </div>
 
-          <!-- 关注话题 -->
+          <!-- Chủ đề quan tâm -->
           <div class="modal-section" v-if="selectedProfile.interested_topics?.length">
-            <span class="section-label">现实种子关联话题</span>
+            <span class="section-label">Chủ đề liên quan đến hạt giống thực tế</span>
             <div class="topics-grid">
               <span 
                 v-for="topic in selectedProfile.interested_topics" 
@@ -582,27 +582,27 @@
             </div>
           </div>
 
-          <!-- 详细人设 -->
+          <!-- Nhân vật chi tiết -->
           <div class="modal-section" v-if="selectedProfile.persona">
-            <span class="section-label">详细人设背景</span>
-            
-            <!-- 人设维度概览 -->
+            <span class="section-label">Nền tảng nhân vật chi tiết</span>
+
+            <!-- Tổng quan các chiều nhân vật -->
             <div class="persona-dimensions">
               <div class="dimension-card">
-                <span class="dim-title">事件全景经历</span>
-                <span class="dim-desc">在此事件中的完整行为轨迹</span>
+                <span class="dim-title">Trải nghiệm toàn cảnh sự kiện</span>
+                <span class="dim-desc">Quỹ đạo hành vi hoàn chỉnh trong sự kiện này</span>
               </div>
               <div class="dimension-card">
-                <span class="dim-title">行为模式侧写</span>
-                <span class="dim-desc">经验总结与行事风格偏好</span>
+                <span class="dim-title">Hồ sơ mô tả hành vi</span>
+                <span class="dim-desc">Tóm tắt kinh nghiệm và sở thích phong cách hành động</span>
               </div>
               <div class="dimension-card">
-                <span class="dim-title">独特记忆印记</span>
-                <span class="dim-desc">基于现实种子形成的记忆</span>
+                <span class="dim-title">Dấu ấn bộ nhớ độc đáo</span>
+                <span class="dim-desc">Bộ nhớ hình thành dựa trên hạt giống thực tế</span>
               </div>
               <div class="dimension-card">
-                <span class="dim-title">社会关系网络</span>
-                <span class="dim-desc">个体链接与交互图谱</span>
+                <span class="dim-title">Mạng lưới quan hệ xã hội</span>
+                <span class="dim-desc">Liên kết cá nhân và bản đồ tương tác</span>
               </div>
             </div>
 
@@ -642,7 +642,7 @@ import {
 } from '../api/simulation'
 
 const props = defineProps({
-  simulationId: String,  // 从父组件传入
+  simulationId: String,  // Được truyền từ thành phần cha
   projectData: Object,
   graphData: Object,
   systemLogs: Array
@@ -651,7 +651,7 @@ const props = defineProps({
 const emit = defineEmits(['go-back', 'next-step', 'add-log', 'update-status'])
 
 // State
-const phase = ref(0) // 0: 初始化, 1: 生成人设, 2: 生成配置, 3: 完成
+const phase = ref(0) // 0: Khởi tạo, 1: Tạo nhân vật, 2: Tạo cấu hình, 3: Hoàn thành
 const taskId = ref(null)
 const prepareProgress = ref(0)
 const currentStage = ref('')
@@ -663,43 +663,43 @@ const simulationConfig = ref(null)
 const selectedProfile = ref(null)
 const showProfilesDetail = ref(true)
 
-// 日志去重：记录上一次输出的关键信息
+// Khử trùng lặp nhật ký: ghi lại thông tin chính lần cuối cùng
 let lastLoggedMessage = ''
 let lastLoggedProfileCount = 0
 let lastLoggedConfigStage = ''
 
-// 模拟轮数配置
-const useCustomRounds = ref(false) // 默认使用自动配置轮数
-const customMaxRounds = ref(40)   // 默认推荐40轮
+// Cấu hình số vòng mô phỏng
+const useCustomRounds = ref(false) // Theo mặc định, sử dụng cấu hình tự động số vòng
+const customMaxRounds = ref(40)   // Mặc định đề xuất 40 vòng
 
-// Watch stage to update phase
+// Giám sát giai đoạn để cập nhật pha
 watch(currentStage, (newStage) => {
-  if (newStage === '生成Agent人设' || newStage === 'generating_profiles') {
+  if (newStage === 'Tạo nhân vật Agent' || newStage === 'generating_profiles') {
     phase.value = 1
-  } else if (newStage === '生成模拟配置' || newStage === 'generating_config') {
+  } else if (newStage === 'Tạo cấu hình mô phỏng' || newStage === 'generating_config') {
     phase.value = 2
-    // 进入配置生成阶段，开始轮询配置
+    // Nhập giai đoạn tạo cấu hình, bắt đầu lấy cấu hình
     if (!configTimer) {
-      addLog('开始生成双平台模拟配置...')
+      addLog('Bắt đầu tạo cấu hình mô phỏng hai nền tảng...')
       startConfigPolling()
     }
-  } else if (newStage === '准备模拟脚本' || newStage === 'copying_scripts') {
-    phase.value = 2 // 仍属于配置阶段
+  } else if (newStage === 'Chuẩn bị kịch bản mô phỏng' || newStage === 'copying_scripts') {
+    phase.value = 2 // Vẫn thuộc giai đoạn cấu hình
   }
 })
 
-// 从配置中计算自动生成的轮数（不使用硬编码默认值）
+// Tính số vòng được tạo tự động từ cấu hình (không sử dụng giá trị mặc định được mã hóa cứng)
 const autoGeneratedRounds = computed(() => {
   if (!simulationConfig.value?.time_config) {
-    return null // 配置未生成时返回 null
+    return null // Trả về null khi cấu hình chưa được tạo
   }
   const totalHours = simulationConfig.value.time_config.total_simulation_hours
   const minutesPerRound = simulationConfig.value.time_config.minutes_per_round
   if (!totalHours || !minutesPerRound) {
-    return null // 配置数据不完整时返回 null
+    return null // Trả về null khi dữ liệu cấu hình không đầy đủ
   }
   const calculatedRounds = Math.floor((totalHours * 60) / minutesPerRound)
-  // 确保最大轮数不小于40（推荐值），避免滑动条范围异常
+  // Đảm bảo số vòng tối đa không nhỏ hơn 40 (giá trị đề xuất), tránh phạm vi thanh trượt bất thường
   return Math.max(calculatedRounds, 40)
 })
 
@@ -716,7 +716,7 @@ const displayProfiles = computed(() => {
   return profiles.value.slice(0, 6)
 })
 
-// 根据agent_id获取对应的username
+// Lấy tên người dùng tương ứng dựa trên agent_id
 const getAgentUsername = (agentId) => {
   if (profiles.value && profiles.value.length > agentId && agentId >= 0) {
     const profile = profiles.value[agentId]
@@ -725,7 +725,7 @@ const getAgentUsername = (agentId) => {
   return `agent_${agentId}`
 }
 
-// 计算所有人设的关联话题总数
+// Tính tổng số chủ đề liên quan của tất cả nhân vật
 const totalTopicsCount = computed(() => {
   return profiles.value.reduce((sum, p) => {
     return sum + (p.interested_topics?.length || 0)
@@ -737,20 +737,20 @@ const addLog = (msg) => {
   emit('add-log', msg)
 }
 
-// 处理开始模拟按钮点击
+// Xử lý nhấp nút bắt đầu mô phỏng
 const handleStartSimulation = () => {
-  // 构建传递给父组件的参数
+  // Xây dựng các tham số để chuyển cho thành phần cha
   const params = {}
-  
+
   if (useCustomRounds.value) {
-    // 用户自定义轮数，传递 max_rounds 参数
+    // Người dùng tùy chỉnh số vòng, chuyển tham số max_rounds
     params.maxRounds = customMaxRounds.value
-    addLog(`开始模拟，自定义轮数: ${customMaxRounds.value} 轮`)
+    addLog(`Bắt đầu mô phỏng, số vòng tùy chỉnh: ${customMaxRounds.value} vòng`)
   } else {
-    // 用户选择保持自动生成的轮数，不传递 max_rounds 参数
-    addLog(`开始模拟，使用自动配置轮数: ${autoGeneratedRounds.value} 轮`)
+    // Người dùng chọn giữ số vòng được tạo tự động, không chuyển tham số max_rounds
+    addLog(`Bắt đầu mô phỏng, sử dụng số vòng cấu hình tự động: ${autoGeneratedRounds.value} vòng`)
   }
-  
+
   emit('next-step', params)
 }
 
@@ -765,18 +765,18 @@ const selectProfile = (profile) => {
   selectedProfile.value = profile
 }
 
-// 自动开始准备模拟
+// Tự động bắt đầu chuẩn bị mô phỏng
 const startPrepareSimulation = async () => {
   if (!props.simulationId) {
-    addLog('错误：缺少 simulationId')
+    addLog('Lỗi: simulationId bị thiếu')
     emit('update-status', 'error')
     return
   }
-  
-  // 标记第一步完成，开始第二步
+
+  // Đánh dấu bước đầu tiên hoàn thành, bắt đầu bước hai
   phase.value = 1
-  addLog(`模拟实例已创建: ${props.simulationId}`)
-  addLog('正在准备模拟环境...')
+  addLog(`Phiên bản mô phỏng đã được tạo: ${props.simulationId}`)
+  addLog('Đang chuẩn bị môi trường mô phỏng...')
   emit('update-status', 'processing')
   
   try {
@@ -797,26 +797,26 @@ const startPrepareSimulation = async () => {
       addLog(`准备任务已启动`)
       addLog(`  └─ Task ID: ${res.data.task_id}`)
       
-      // 立即设置预期Agent总数（从prepare接口返回值获取）
+      // Đặt ngay tổng số Agent dự kiến (lấy từ giá trị trả về giao diện chuẩn bị)
       if (res.data.expected_entities_count) {
         expectedTotal.value = res.data.expected_entities_count
-        addLog(`从Zep图谱读取到 ${res.data.expected_entities_count} 个实体`)
+        addLog(`Đọc ${res.data.expected_entities_count} thực thể từ đồ thị Zep`)
         if (res.data.entity_types && res.data.entity_types.length > 0) {
-          addLog(`  └─ 实体类型: ${res.data.entity_types.join(', ')}`)
+          addLog(`  └─ Loại thực thể: ${res.data.entity_types.join(', ')}`)
         }
       }
-      
-      addLog('开始轮询准备进度...')
-      // 开始轮询进度
+
+      addLog('Bắt đầu lấy tiến độ chuẩn bị...')
+      // Bắt đầu lấy tiến độ
       startPolling()
-      // 开始实时获取 Profiles
+      // Bắt đầu lấy Profiles thời gian thực
       startProfilesPolling()
     } else {
-      addLog(`准备失败: ${res.error || '未知错误'}`)
+      addLog(`Chuẩn bị thất bại: ${res.error || 'Lỗi không xác định'}`)
       emit('update-status', 'error')
     }
   } catch (err) {
-    addLog(`准备异常: ${err.message}`)
+    addLog(`Lỗi chuẩn bị: ${err.message}`)
     emit('update-status', 'error')
   }
 }
@@ -855,15 +855,15 @@ const pollPrepareStatus = async () => {
     if (res.success && res.data) {
       const data = res.data
       
-      // 更新进度
+      // Cập nhật tiến độ
       prepareProgress.value = data.progress || 0
       progressMessage.value = data.message || ''
-      
-      // 解析阶段信息并输出详细日志
+
+      // Phân tích thông tin giai đoạn và xuất nhật ký chi tiết
       if (data.progress_detail) {
         currentStage.value = data.progress_detail.current_stage_name || ''
-        
-        // 输出详细进度日志（避免重复）
+
+        // Xuất nhật ký tiến độ chi tiết (tránh trùng lặp)
         const detail = data.progress_detail
         const logKey = `${detail.current_stage}-${detail.current_item}-${detail.total_items}`
         if (logKey !== lastLoggedMessage && detail.item_description) {
@@ -876,57 +876,57 @@ const pollPrepareStatus = async () => {
           }
         }
       } else if (data.message) {
-        // 从消息中提取阶段
+        // Trích xuất giai đoạn từ thông báo
         const match = data.message.match(/\[(\d+)\/(\d+)\]\s*([^:]+)/)
         if (match) {
           currentStage.value = match[3].trim()
         }
-        // 输出消息日志（避免重复）
+        // Xuất nhật ký thông báo (tránh trùng lặp)
         if (data.message !== lastLoggedMessage) {
           lastLoggedMessage = data.message
           addLog(data.message)
         }
       }
-      
-      // 检查是否完成
+
+      // Kiểm tra xem đã hoàn thành chưa
       if (data.status === 'completed' || data.status === 'ready' || data.already_prepared) {
-        addLog('✓ 准备工作已完成')
+        addLog('✓ Chuẩn bị đã hoàn thành')
         stopPolling()
         stopProfilesPolling()
         await loadPreparedData()
       } else if (data.status === 'failed') {
-        addLog(`✗ 准备失败: ${data.error || '未知错误'}`)
+        addLog(`✗ Chuẩn bị thất bại: ${data.error || 'Lỗi không xác định'}`)
         stopPolling()
         stopProfilesPolling()
       }
     }
   } catch (err) {
-    console.warn('轮询状态失败:', err)
+    console.warn('Lấy trạng thái lấy thất bại:', err)
   }
 }
 
 const fetchProfilesRealtime = async () => {
   if (!props.simulationId) return
-  
+
   try {
     const res = await getSimulationProfilesRealtime(props.simulationId, 'reddit')
-    
+
     if (res.success && res.data) {
       const prevCount = profiles.value.length
       profiles.value = res.data.profiles || []
-      // 只有当 API 返回有效值时才更新，避免覆盖已有的有效值
+      // Chỉ cập nhật khi API trả về giá trị hợp lệ, tránh ghi đè các giá trị hợp lệ hiện có
       if (res.data.total_expected) {
         expectedTotal.value = res.data.total_expected
       }
-      
-      // 提取实体类型
+
+      // Trích xuất loại thực thể
       const types = new Set()
       profiles.value.forEach(p => {
         if (p.entity_type) types.add(p.entity_type)
       })
       entityTypes.value = Array.from(types)
-      
-      // 输出 Profile 生成进度日志（仅当数量变化时）
+
+      // Xuất nhật ký tiến độ tạo Profile (chỉ khi số lượng thay đổi)
       const currentCount = profiles.value.length
       if (currentCount > 0 && currentCount !== lastLoggedProfileCount) {
         lastLoggedProfileCount = currentCount
@@ -934,22 +934,22 @@ const fetchProfilesRealtime = async () => {
         const latestProfile = profiles.value[currentCount - 1]
         const profileName = latestProfile?.name || latestProfile?.username || `Agent_${currentCount}`
         if (currentCount === 1) {
-          addLog(`开始生成Agent人设...`)
+          addLog(`Bắt đầu tạo nhân vật Agent...`)
         }
-        addLog(`→ Agent人设 ${currentCount}/${total}: ${profileName} (${latestProfile?.profession || '未知职业'})`)
-        
-        // 如果全部生成完成
+        addLog(`→ Nhân vật Agent ${currentCount}/${total}: ${profileName} (${latestProfile?.profession || 'Nghề nghiệp không xác định'})`)
+
+        // Nếu tạo xong tất cả
         if (expectedTotal.value && currentCount >= expectedTotal.value) {
-          addLog(`✓ 全部 ${currentCount} 个Agent人设生成完成`)
+          addLog(`✓ Tạo xong tất cả ${currentCount} nhân vật Agent`)
         }
       }
     }
   } catch (err) {
-    console.warn('获取 Profiles 失败:', err)
+    console.warn('Lấy Profiles thất bại:', err)
   }
 }
 
-// 配置轮询
+// Lấy cấu hình thời gian thực
 const startConfigPolling = () => {
   configTimer = setInterval(fetchConfigRealtime, 2000)
 }
@@ -963,99 +963,99 @@ const stopConfigPolling = () => {
 
 const fetchConfigRealtime = async () => {
   if (!props.simulationId) return
-  
+
   try {
     const res = await getSimulationConfigRealtime(props.simulationId)
-    
+
     if (res.success && res.data) {
       const data = res.data
-      
-      // 输出配置生成阶段日志（避免重复）
+
+      // Xuất nhật ký giai đoạn tạo cấu hình (tránh trùng lặp)
       if (data.generation_stage && data.generation_stage !== lastLoggedConfigStage) {
         lastLoggedConfigStage = data.generation_stage
         if (data.generation_stage === 'generating_profiles') {
-          addLog('正在生成Agent人设配置...')
+          addLog('Đang tạo cấu hình nhân vật Agent...')
         } else if (data.generation_stage === 'generating_config') {
-          addLog('正在调用LLM生成模拟配置参数...')
+          addLog('Đang gọi LLM tạo tham số cấu hình mô phỏng...')
         }
       }
-      
-      // 如果配置已生成
+
+      // Nếu cấu hình đã được tạo
       if (data.config_generated && data.config) {
         simulationConfig.value = data.config
-        addLog('✓ 模拟配置生成完成')
-        
-        // 显示详细配置摘要
+        addLog('✓ Tạo cấu hình mô phỏng hoàn thành')
+
+        // Hiển thị tóm tắt cấu hình chi tiết
         if (data.summary) {
-          addLog(`  ├─ Agent数量: ${data.summary.total_agents}个`)
-          addLog(`  ├─ 模拟时长: ${data.summary.simulation_hours}小时`)
-          addLog(`  ├─ 初始帖子: ${data.summary.initial_posts_count}条`)
-          addLog(`  ├─ 热点话题: ${data.summary.hot_topics_count}个`)
-          addLog(`  └─ 平台配置: Twitter ${data.summary.has_twitter_config ? '✓' : '✗'}, Reddit ${data.summary.has_reddit_config ? '✓' : '✗'}`)
+          addLog(`  ├─ Số lượng Agent: ${data.summary.total_agents}`)
+          addLog(`  ├─ Thời lượng mô phỏng: ${data.summary.simulation_hours} giờ`)
+          addLog(`  ├─ Bài viết ban đầu: ${data.summary.initial_posts_count}`)
+          addLog(`  ├─ Chủ đề nóng: ${data.summary.hot_topics_count}`)
+          addLog(`  └─ Cấu hình nền tảng: Twitter ${data.summary.has_twitter_config ? '✓' : '✗'}, Reddit ${data.summary.has_reddit_config ? '✓' : '✗'}`)
         }
-        
-        // 显示时间配置详情
+
+        // Hiển thị chi tiết cấu hình thời gian
         if (data.config.time_config) {
           const tc = data.config.time_config
-          addLog(`时间配置: 每轮${tc.minutes_per_round}分钟, 共${Math.floor((tc.total_simulation_hours * 60) / tc.minutes_per_round)}轮`)
+          addLog(`Cấu hình thời gian: mỗi vòng ${tc.minutes_per_round} phút, tổng cộng ${Math.floor((tc.total_simulation_hours * 60) / tc.minutes_per_round)} vòng`)
         }
-        
-        // 显示事件配置
+
+        // Hiển thị cấu hình sự kiện
         if (data.config.event_config?.narrative_direction) {
           const narrative = data.config.event_config.narrative_direction
-          addLog(`叙事方向: ${narrative.length > 50 ? narrative.substring(0, 50) + '...' : narrative}`)
+          addLog(`Hướng kịch bản: ${narrative.length > 50 ? narrative.substring(0, 50) + '...' : narrative}`)
         }
-        
+
         stopConfigPolling()
         phase.value = 4
-        addLog('✓ 环境搭建完成，可以开始模拟')
+        addLog('✓ Hoàn thành thiết lập môi trường, bạn có thể bắt đầu mô phỏng')
         emit('update-status', 'completed')
       }
     }
   } catch (err) {
-    console.warn('获取 Config 失败:', err)
+    console.warn('Lấy Config thất bại:', err)
   }
 }
 
 const loadPreparedData = async () => {
   phase.value = 2
-  addLog('正在加载已有配置数据...')
+  addLog('Đang tải dữ liệu cấu hình hiện có...')
 
-  // 最后获取一次 Profiles
+  // Lấy Profiles lần cuối
   await fetchProfilesRealtime()
-  addLog(`已加载 ${profiles.value.length} 个Agent人设`)
+  addLog(`Đã tải ${profiles.value.length} nhân vật Agent`)
 
-  // 获取配置（使用实时接口）
+  // Lấy cấu hình (sử dụng giao diện thời gian thực)
   try {
     const res = await getSimulationConfigRealtime(props.simulationId)
     if (res.success && res.data) {
       if (res.data.config_generated && res.data.config) {
         simulationConfig.value = res.data.config
-        addLog('✓ 模拟配置加载成功')
-        
-        // 显示详细配置摘要
+        addLog('✓ Tải cấu hình mô phỏng thành công')
+
+        // Hiển thị tóm tắt cấu hình chi tiết
         if (res.data.summary) {
-          addLog(`  ├─ Agent数量: ${res.data.summary.total_agents}个`)
-          addLog(`  ├─ 模拟时长: ${res.data.summary.simulation_hours}小时`)
-          addLog(`  └─ 初始帖子: ${res.data.summary.initial_posts_count}条`)
+          addLog(`  ├─ Số lượng Agent: ${res.data.summary.total_agents}`)
+          addLog(`  ├─ Thời lượng mô phỏng: ${res.data.summary.simulation_hours} giờ`)
+          addLog(`  └─ Bài viết ban đầu: ${res.data.summary.initial_posts_count}`)
         }
-        
-        addLog('✓ 环境搭建完成，可以开始模拟')
+
+        addLog('✓ Hoàn thành thiết lập môi trường, bạn có thể bắt đầu mô phỏng')
         phase.value = 4
         emit('update-status', 'completed')
       } else {
-        // 配置尚未生成，开始轮询
-        addLog('配置生成中，开始轮询等待...')
+        // Cấu hình chưa được tạo, bắt đầu lấy
+        addLog('Cấu hình đang được tạo, bắt đầu chờ...')
         startConfigPolling()
       }
     }
   } catch (err) {
-    addLog(`加载配置失败: ${err.message}`)
+    addLog(`Tải cấu hình thất bại: ${err.message}`)
     emit('update-status', 'error')
   }
 }
 
-// Scroll log to bottom
+// Cuộn nhật ký xuống dưới
 const logContent = ref(null)
 watch(() => props.systemLogs?.length, () => {
   nextTick(() => {
@@ -1066,9 +1066,9 @@ watch(() => props.systemLogs?.length, () => {
 })
 
 onMounted(() => {
-  // 自动开始准备流程
+  // Tự động bắt đầu quy trình chuẩn bị
   if (props.simulationId) {
-    addLog('Step2 环境搭建初始化')
+    addLog('Step2 Khởi tạo thiết lập môi trường')
     startPrepareSimulation()
   }
 })
@@ -1098,7 +1098,7 @@ onUnmounted(() => {
   gap: 20px;
 }
 
-/* Step Card */
+/* Thẻ bước -->
 .step-card {
   background: #FFF;
   border-radius: 8px;
@@ -1902,7 +1902,7 @@ onUnmounted(() => {
   flex: 1;
 }
 
-/* 基本信息网格 */
+/* Lưới thông tin cơ bản */
 .modal-info-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
@@ -1938,7 +1938,7 @@ onUnmounted(() => {
   color: #FF5722;
 }
 
-/* 模块区域 */
+/* Khu vực mô-đun */
 .modal-section {
   margin-bottom: 28px;
 }
@@ -1964,7 +1964,7 @@ onUnmounted(() => {
   border-left: 3px solid #E0E0E0;
 }
 
-/* 话题标签 */
+/* Nhãn chủ đề */
 .topics-grid {
   display: flex;
   flex-wrap: wrap;
@@ -1986,7 +1986,7 @@ onUnmounted(() => {
   color: #0D47A1;
 }
 
-/* 详细人设 */
+/* Nhân vật chi tiết */
 .persona-dimensions {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
@@ -2272,7 +2272,7 @@ onUnmounted(() => {
   margin: 0;
 }
 
-/* 模拟轮数配置样式 */
+/* Phong cách cấu hình số vòng mô phỏng */
 .rounds-config-section {
   margin: 24px 0;
   padding-top: 24px;

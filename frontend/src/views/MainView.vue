@@ -90,7 +90,7 @@ const router = useRouter()
 const viewMode = ref('split') // graph | split | workbench
 
 // Step State
-const currentStep = ref(1) // 1: 图谱构建, 2: 环境搭建, 3: 开始模拟, 4: 报告生成, 5: 深度互动
+const currentStep = ref(1) // 1: Xây dựng đồ thị, 2: Thiết lập môi trường, 3: Bắt đầu mô phỏng, 4: Tạo báo cáo, 5: Tương tác sâu
 const stepNames = ['图谱构建', '环境搭建', '开始模拟', '报告生成', '深度互动']
 
 // Data State
@@ -100,7 +100,7 @@ const graphLoading = ref(false)
 const error = ref('')
 const projectData = ref(null)
 const graphData = ref(null)
-const currentPhase = ref(-1) // -1: Upload, 0: Ontology, 1: Build, 2: Complete
+const currentPhase = ref(-1) // -1: Tải lên, 0: Ontology, 1: Xây dựng, 2: Hoàn thành
 const ontologyProgress = ref(null)
 const buildProgress = ref(null)
 const systemLogs = ref([])
@@ -161,7 +161,7 @@ const handleNextStep = (params = {}) => {
     currentStep.value++
     addLog(`进入 Step ${currentStep.value}: ${stepNames[currentStep.value - 1]}`)
     
-    // 如果是从 Step 2 进入 Step 3，记录模拟轮数配置
+    // Nếu nhập Step 3 từ Step 2, ghi lại cấu hình số vòng mô phỏng
     if (currentStep.value === 3 && params.maxRounds) {
       addLog(`自定义模拟轮数: ${params.maxRounds} 轮`)
     }
@@ -324,7 +324,7 @@ const pollTaskStatus = async (taskId) => {
     if (res.success) {
       const task = res.data
       
-      // Log progress message if it changed
+      // Ghi tin nhắn tiến trình nếu đã thay đổi
       if (task.message && task.message !== buildProgress.value?.message) {
         addLog(task.message)
       }
@@ -334,10 +334,10 @@ const pollTaskStatus = async (taskId) => {
       if (task.status === 'completed') {
         addLog('Graph build task completed.')
         stopPolling()
-        stopGraphPolling() // Stop polling, do final load
+        stopGraphPolling() // Dừng polling, thực hiện tải cuối cùng
         currentPhase.value = 2
         
-        // Final load
+        // Tải cuối cùng
         const projRes = await getProject(currentProjectId.value)
         if (projRes.success && projRes.data.graph_id) {
             projectData.value = projRes.data

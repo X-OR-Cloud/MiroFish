@@ -429,24 +429,24 @@ const rightPanel = ref(null)
 const logContent = ref(null)
 const showRawResult = reactive({})
 
-// Toggle functions
+// Các hàm chuyển đổi
 const toggleRawResult = (timestamp, event) => {
-  // 保存按钮相对于视口的位置
+  // Lưu vị trí của nút so với viewport
   const button = event?.target
   const buttonRect = button?.getBoundingClientRect()
   const buttonTopBeforeToggle = buttonRect?.top
-  
-  // 切换状态
+
+  // Chuyển đổi trạng thái
   showRawResult[timestamp] = !showRawResult[timestamp]
-  
-  // 等待 DOM 更新后，调整滚动位置以保持按钮在相同位置
+
+  // Chờ DOM cập nhật, sau đó điều chỉnh vị trí cuộn để giữ nút ở cùng một vị trí
   if (button && buttonTopBeforeToggle !== undefined && rightPanel.value) {
     nextTick(() => {
       const newButtonRect = button.getBoundingClientRect()
       const buttonTopAfterToggle = newButtonRect.top
       const scrollDelta = buttonTopAfterToggle - buttonTopBeforeToggle
-      
-      // 调整滚动位置
+
+      // Điều chỉnh vị trí cuộn
       rightPanel.value.scrollTop += scrollDelta
     })
   }
@@ -464,7 +464,7 @@ const toggleSectionContent = (idx) => {
 }
 
 const toggleSectionCollapse = (idx) => {
-  // 只有已完成的章节才能折叠
+  // Chỉ các phần đã hoàn thành mới có thể thu gọn
   if (!generatedSections.value[idx + 1]) return
   const newSet = new Set(collapsedSections.value)
   if (newSet.has(idx)) {
@@ -492,37 +492,37 @@ const isLogCollapsed = (log) => {
   return false
 }
 
-// Tool configurations with display names and colors
+// Cấu hình công cụ với tên hiển thị và màu sắc
 const toolConfig = {
   'insight_forge': {
     name: 'Deep Insight',
     color: 'purple',
-    icon: 'lightbulb' // 灯泡图标 - 代表洞察
+    icon: 'lightbulb' // Biểu tượng bóng đèn - đại diện cho sự hiểu biết
   },
   'panorama_search': {
     name: 'Panorama Search',
     color: 'blue',
-    icon: 'globe' // 地球图标 - 代表全景搜索
+    icon: 'globe' // Biểu tượng quả cầu - đại diện cho tìm kiếm toàn cảnh
   },
   'interview_agents': {
     name: 'Agent Interview',
     color: 'green',
-    icon: 'users' // 用户图标 - 代表对话
+    icon: 'users' // Biểu tượng người dùng - đại diện cho cuộc trò chuyện
   },
   'quick_search': {
     name: 'Quick Search',
     color: 'orange',
-    icon: 'zap' // 闪电图标 - 代表快速
+    icon: 'zap' // Biểu tượng sét - đại diện cho tốc độ
   },
   'get_graph_statistics': {
     name: 'Graph Stats',
     color: 'cyan',
-    icon: 'chart' // 图表图标 - 代表统计
+    icon: 'chart' // Biểu tượng biểu đồ - đại diện cho thống kê
   },
   'get_entities_by_type': {
     name: 'Entity Query',
     color: 'pink',
-    icon: 'database' // 数据库图标 - 代表实体
+    icon: 'database' // Biểu tượng cơ sở dữ liệu - đại diện cho thực thể
   }
 }
 
@@ -538,7 +538,7 @@ const getToolIcon = (toolName) => {
   return toolConfig[toolName]?.icon || 'tool'
 }
 
-// Parse functions
+// Các hàm phân tích
 const parseInsightForge = (text) => {
   const result = {
     query: '',
@@ -549,32 +549,32 @@ const parseInsightForge = (text) => {
     entities: [],
     relations: []
   }
-  
+
   try {
-    // 提取分析问题
+    // Trích xuất câu hỏi phân tích
     const queryMatch = text.match(/分析问题:\s*(.+?)(?:\n|$)/)
     if (queryMatch) result.query = queryMatch[1].trim()
-    
-    // 提取预测场景
+
+    // Trích xuất kịch bản dự báo
     const reqMatch = text.match(/预测场景:\s*(.+?)(?:\n|$)/)
     if (reqMatch) result.simulationRequirement = reqMatch[1].trim()
-    
-    // 提取统计数据 - 匹配"相关预测事实: X条"格式
+
+    // Trích xuất dữ liệu thống kê - khớp với định dạng "related prediction facts: X items"
     const factMatch = text.match(/相关预测事实:\s*(\d+)/)
     const entityMatch = text.match(/涉及实体:\s*(\d+)/)
     const relMatch = text.match(/关系链:\s*(\d+)/)
     if (factMatch) result.stats.facts = parseInt(factMatch[1])
     if (entityMatch) result.stats.entities = parseInt(entityMatch[1])
     if (relMatch) result.stats.relationships = parseInt(relMatch[1])
-    
-    // 提取子问题 - 完整提取，不限制数量
+
+    // Trích xuất câu hỏi con - trích xuất hoàn chỉnh, không giới hạn số lượng
     const subQSection = text.match(/### 分析的子问题\n([\s\S]*?)(?=\n###|$)/)
     if (subQSection) {
       const lines = subQSection[1].split('\n').filter(l => l.match(/^\d+\./))
       result.subQueries = lines.map(l => l.replace(/^\d+\.\s*/, '').trim()).filter(Boolean)
     }
-    
-    // 提取关键事实 - 完整提取，不限制数量
+
+    // Trích xuất các sự kiện chính - trích xuất hoàn chỉnh, không giới hạn số lượng
     const factsSection = text.match(/### 【关键事实】[\s\S]*?\n([\s\S]*?)(?=\n###|$)/)
     if (factsSection) {
       const lines = factsSection[1].split('\n').filter(l => l.match(/^\d+\./))
@@ -583,12 +583,12 @@ const parseInsightForge = (text) => {
         return match ? match[1].replace(/^"|"$/g, '').trim() : l.replace(/^\d+\.\s*/, '').trim()
       }).filter(Boolean)
     }
-    
-    // 提取核心实体 - 完整提取，包含摘要和相关事实数
+
+    // Trích xuất các thực thể cốt lõi - trích xuất hoàn chỉnh, bao gồm tóm tắt và số sự kiện liên quan
     const entitySection = text.match(/### 【核心实体】\n([\s\S]*?)(?=\n###|$)/)
     if (entitySection) {
       const entityText = entitySection[1]
-      // 按 "- **" 分割实体块
+      // Chia nhỏ các khối thực thể theo "- **"
       const entityBlocks = entityText.split(/\n(?=- \*\*)/).filter(b => b.trim().startsWith('- **'))
       result.entities = entityBlocks.map(block => {
         const nameMatch = block.match(/^-\s*\*\*(.+?)\*\*\s*\((.+?)\)/)
@@ -602,8 +602,8 @@ const parseInsightForge = (text) => {
         }
       }).filter(e => e.name)
     }
-    
-    // 提取关系链 - 完整提取，不限制数量
+
+    // Trích xuất chuỗi quan hệ - trích xuất hoàn chỉnh, không giới hạn số lượng
     const relSection = text.match(/### 【关系链】\n([\s\S]*?)(?=\n###|$)/)
     if (relSection) {
       const lines = relSection[1].split('\n').filter(l => l.trim().startsWith('-'))
@@ -630,13 +630,13 @@ const parsePanorama = (text) => {
     historicalFacts: [],
     entities: []
   }
-  
+
   try {
-    // 提取查询
+    // Trích xuất truy vấn
     const queryMatch = text.match(/查询:\s*(.+?)(?:\n|$)/)
     if (queryMatch) result.query = queryMatch[1].trim()
-    
-    // 提取统计数据
+
+    // Trích xuất dữ liệu thống kê
     const nodesMatch = text.match(/总节点数:\s*(\d+)/)
     const edgesMatch = text.match(/总边数:\s*(\d+)/)
     const activeMatch = text.match(/当前有效事实:\s*(\d+)/)
@@ -645,19 +645,19 @@ const parsePanorama = (text) => {
     if (edgesMatch) result.stats.edges = parseInt(edgesMatch[1])
     if (activeMatch) result.stats.activeFacts = parseInt(activeMatch[1])
     if (histMatch) result.stats.historicalFacts = parseInt(histMatch[1])
-    
-    // 提取当前有效事实 - 完整提取，不限制数量
+
+    // Trích xuất các sự kiện hiện tại hợp lệ - trích xuất hoàn chỉnh, không giới hạn số lượng
     const activeSection = text.match(/### 【当前有效事实】[\s\S]*?\n([\s\S]*?)(?=\n###|$)/)
     if (activeSection) {
       const lines = activeSection[1].split('\n').filter(l => l.match(/^\d+\./))
       result.activeFacts = lines.map(l => {
-        // 移除编号和引号
+        // Xóa số và dấu ngoặc kép
         const factText = l.replace(/^\d+\.\s*/, '').replace(/^"|"$/g, '').trim()
         return factText
       }).filter(Boolean)
     }
-    
-    // 提取历史/过期事实 - 完整提取，不限制数量
+
+    // Trích xuất các sự kiện lịch sử / hết hạn - trích xuất hoàn chỉnh, không giới hạn số lượng
     const histSection = text.match(/### 【历史\/过期事实】[\s\S]*?\n([\s\S]*?)(?=\n###|$)/)
     if (histSection) {
       const lines = histSection[1].split('\n').filter(l => l.match(/^\d+\./))
@@ -666,8 +666,8 @@ const parsePanorama = (text) => {
         return factText
       }).filter(Boolean)
     }
-    
-    // 提取涉及实体 - 完整提取，不限制数量
+
+    // Trích xuất các thực thể liên quan - trích xuất hoàn chỉnh, không giới hạn số lượng
     const entitySection = text.match(/### 【涉及实体】\n([\s\S]*?)(?=\n###|$)/)
     if (entitySection) {
       const lines = entitySection[1].split('\n').filter(l => l.trim().startsWith('-'))
@@ -680,7 +680,7 @@ const parsePanorama = (text) => {
   } catch (e) {
     console.warn('Parse panorama failed:', e)
   }
-  
+
   return result
 }
 
@@ -694,50 +694,50 @@ const parseInterview = (text) => {
     interviews: [],
     summary: ''
   }
-  
+
   try {
-    // 提取采访主题
+    // Trích xuất chủ đề cuộc phỏng vấn
     const topicMatch = text.match(/\*\*采访主题:\*\*\s*(.+?)(?:\n|$)/)
     if (topicMatch) result.topic = topicMatch[1].trim()
-    
-    // 提取采访人数（如 "5 / 9 位模拟Agent"）
+
+    // Trích xuất số người được phỏng vấn (như "5 / 9 mô phỏng Agent")
     const countMatch = text.match(/\*\*采访人数:\*\*\s*(\d+)\s*\/\s*(\d+)/)
     if (countMatch) {
       result.successCount = parseInt(countMatch[1])
       result.totalCount = parseInt(countMatch[2])
       result.agentCount = `${countMatch[1]} / ${countMatch[2]}`
     }
-    
-    // 提取采访对象选择理由
+
+    // Trích xuất lý do lựa chọn đối tượng phỏng vấn
     const reasonMatch = text.match(/### 采访对象选择理由\n([\s\S]*?)(?=\n---\n|\n### 采访实录)/)
     if (reasonMatch) {
       result.selectionReason = reasonMatch[1].trim()
     }
-    
-    // 解析每个人的选择理由
+
+    // Phân tích lý do lựa chọn của mỗi người
     const parseIndividualReasons = (reasonText) => {
       const reasons = {}
       if (!reasonText) return reasons
-      
+
       const lines = reasonText.split(/\n+/)
       let currentName = null
       let currentReason = []
-      
+
       for (const line of lines) {
         let headerMatch = null
         let name = null
         let reasonStart = null
-        
-        // 格式1: 数字. **名字（index=X）**：理由
-        // 例如: 1. **校友_345（index=1）**：作为武大校友...
+
+        // Định dạng 1: số. **tên (index=X)**: lý do
+        // Ví dụ: 1. **cựu sinh viên_345 (index=1)**: là cựu sinh viên...
         headerMatch = line.match(/^\d+\.\s*\*\*([^*（(]+)(?:[（(]index\s*=?\s*\d+[)）])?\*\*[：:]\s*(.*)/)
         if (headerMatch) {
           name = headerMatch[1].trim()
           reasonStart = headerMatch[2]
         }
-        
-        // 格式2: - 选择名字（index X）：理由
-        // 例如: - 选择家长_601（index 0）：作为家长群体代表...
+
+        // Định dạng 2: - chọn tên (index X): lý do
+        // Ví dụ: - chọn phụ huynh_601 (index 0): là đại diện nhóm phụ huynh...
         if (!headerMatch) {
           headerMatch = line.match(/^-\s*选择([^（(]+)(?:[（(]index\s*=?\s*\d+[)）])?[：:]\s*(.*)/)
           if (headerMatch) {
@@ -745,9 +745,9 @@ const parseInterview = (text) => {
             reasonStart = headerMatch[2]
           }
         }
-        
-        // 格式3: - **名字（index X）**：理由
-        // 例如: - **家长_601（index 0）**：作为家长群体代表...
+
+        // Định dạng 3: - **tên (index X)**: lý do
+        // Ví dụ: - **phụ huynh_601 (index 0)**: là đại diện nhóm phụ huynh...
         if (!headerMatch) {
           headerMatch = line.match(/^-\s*\*\*([^*（(]+)(?:[（(]index\s*=?\s*\d+[)）])?\*\*[：:]\s*(.*)/)
           if (headerMatch) {
@@ -755,32 +755,32 @@ const parseInterview = (text) => {
             reasonStart = headerMatch[2]
           }
         }
-        
+
         if (name) {
-          // 保存上一个人的理由
+          // Lưu lý do của người trước
           if (currentName && currentReason.length > 0) {
             reasons[currentName] = currentReason.join(' ').trim()
           }
-          // 开始新的人
+          // Bắt đầu một người mới
           currentName = name
           currentReason = reasonStart ? [reasonStart.trim()] : []
         } else if (currentName && line.trim() && !line.match(/^未选|^综上|^最终选择/)) {
-          // 理由的续行（排除结尾总结段落）
+          // Các dòng tiếp theo của lý do (loại trừ đoạn tóm tắt ở cuối)
           currentReason.push(line.trim())
         }
       }
-      
-      // 保存最后一个人的理由
+
+      // Lưu lý do của người cuối cùng
       if (currentName && currentReason.length > 0) {
         reasons[currentName] = currentReason.join(' ').trim()
       }
-      
+
       return reasons
     }
-    
+
     const individualReasons = parseIndividualReasons(result.selectionReason)
-    
-    // 提取每个采访记录
+
+    // Trích xuất mỗi bản ghi phỏng vấn
     const interviewBlocks = text.split(/#### 采访 #\d+:/).slice(1)
     
     interviewBlocks.forEach((block, index) => {
@@ -797,33 +797,33 @@ const parseInterview = (text) => {
         quotes: []
       }
       
-      // 提取标题（如 "学生"、"教育从业者" 等）
+      // Trích xuất tiêu đề (ví dụ "học sinh", "nhân viên giáo dục" v.v.)
       const titleMatch = block.match(/^(.+?)\n/)
       if (titleMatch) interview.title = titleMatch[1].trim()
       
-      // 提取姓名和角色
+      // Trích xuất tên và vai trò
       const nameRoleMatch = block.match(/\*\*(.+?)\*\*\s*\((.+?)\)/)
       if (nameRoleMatch) {
         interview.name = nameRoleMatch[1].trim()
         interview.role = nameRoleMatch[2].trim()
-        // 设置该人的选择理由
+        // Thiết lập lý do lựa chọn người này
         interview.selectionReason = individualReasons[interview.name] || ''
       }
       
-      // 提取简介
+      // Trích xuất tiểu sử
       const bioMatch = block.match(/_简介:\s*([\s\S]*?)_\n/)
       if (bioMatch) {
         interview.bio = bioMatch[1].trim().replace(/\.\.\.$/, '...')
       }
       
-      // 提取问题列表
+      // Trích xuất danh sách câu hỏi
       const qMatch = block.match(/\*\*Q:\*\*\s*([\s\S]*?)(?=\n\n\*\*A:\*\*|\*\*A:\*\*)/)
       if (qMatch) {
         const qText = qMatch[1].trim()
-        // 按数字编号分割问题
+        // Chia câu hỏi theo số thứ tự
         const questions = qText.split(/\n\d+\.\s+/).filter(q => q.trim())
         if (questions.length > 0) {
-          // 如果第一个问题前面有"1."，需要特殊处理
+          // Nếu trước câu hỏi đầu tiên có "1." cần xử lý đặc biệt
           const firstQ = qText.match(/^1\.\s+(.+)/)
           if (firstQ) {
             interview.questions = [firstQ[1].trim(), ...questions.slice(1).map(q => q.trim())]
@@ -833,12 +833,12 @@ const parseInterview = (text) => {
         }
       }
       
-      // 提取回答 - 分Twitter和Reddit
+      // Trích xuất câu trả lời - phân chia Twitter và Reddit
       const answerMatch = block.match(/\*\*A:\*\*\s*([\s\S]*?)(?=\*\*关键引言|$)/)
       if (answerMatch) {
         const answerText = answerMatch[1].trim()
         
-        // 分离Twitter和Reddit回答
+        // Tách biệt câu trả lời Twitter và Reddit
         const twitterMatch = answerText.match(/【Twitter平台回答】\n?([\s\S]*?)(?=【Reddit平台回答】|$)/)
         const redditMatch = answerText.match(/【Reddit平台回答】\n?([\s\S]*?)$/)
         
@@ -849,9 +849,9 @@ const parseInterview = (text) => {
           interview.redditAnswer = redditMatch[1].trim()
         }
         
-        // 平台回退逻辑（兼容旧格式：只有一个平台标记的情况）
+        // Logic fallback nền tảng (tương thích định dạng cũ: chỉ có một nhãn nền tảng)
         if (!twitterMatch && redditMatch) {
-          // 只有 Reddit 回答，仅在非占位文本时复制为默认显示
+          // Chỉ có câu trả lời Reddit, chỉ sao chép làm mặc định khi không phải placeholder
           if (interview.redditAnswer && interview.redditAnswer !== '（该平台未获得回复）') {
             interview.twitterAnswer = interview.redditAnswer
           }
@@ -860,18 +860,18 @@ const parseInterview = (text) => {
             interview.redditAnswer = interview.twitterAnswer
           }
         } else if (!twitterMatch && !redditMatch) {
-          // 没有分平台标记（极旧格式），整体作为回答
+          // Không có nhãn nền tảng (định dạng rất cũ), toàn bộ làm câu trả lời
           interview.twitterAnswer = answerText
         }
       }
       
-      // 提取关键引言（兼容多种引号格式）
+      // Trích xuất trích dẫn quan trọng (tương thích nhiều định dạng trích dẫn)
       const quotesMatch = block.match(/\*\*关键引言:\*\*\n([\s\S]*?)(?=\n---|\n####|$)/)
       if (quotesMatch) {
         const quotesText = quotesMatch[1]
-        // 优先匹配 > "text" 格式
+        // Ưu tiên khớp định dạng > "text"
         let quoteMatches = quotesText.match(/> "([^"]+)"/g)
-        // 回退：匹配 > "text" 或 > \u201Ctext\u201D（中文引号）
+        // Fallback: khớp > "text" hoặc > \u201Ctext\u201D (dấu ngoặc kép tiếng Trung)
         if (!quoteMatches) {
           quoteMatches = quotesText.match(/> [\u201C""]([^\u201D""]+)[\u201D""]/g)
         }
@@ -887,7 +887,7 @@ const parseInterview = (text) => {
       }
     })
     
-    // 提取采访摘要
+    // Trích xuất tóm tắt phỏng vấn
     const summaryMatch = text.match(/### 采访摘要与核心观点\n([\s\S]*?)$/)
     if (summaryMatch) {
       result.summary = summaryMatch[1].trim()
@@ -909,22 +909,22 @@ const parseQuickSearch = (text) => {
   }
   
   try {
-    // 提取搜索查询
+    // Trích xuất truy vấn tìm kiếm
     const queryMatch = text.match(/搜索查询:\s*(.+?)(?:\n|$)/)
     if (queryMatch) result.query = queryMatch[1].trim()
     
-    // 提取结果数量
+    // Trích xuất số lượng kết quả
     const countMatch = text.match(/找到\s*(\d+)\s*条/)
     if (countMatch) result.count = parseInt(countMatch[1])
     
-    // 提取相关事实 - 完整提取，不限制数量
+    // Trích xuất sự kiện liên quan - trích xuất đầy đủ, không giới hạn số lượng
     const factsSection = text.match(/### 相关事实:\n([\s\S]*)$/)
     if (factsSection) {
       const lines = factsSection[1].split('\n').filter(l => l.match(/^\d+\./))
       result.facts = lines.map(l => l.replace(/^\d+\.\s*/, '').trim()).filter(Boolean)
     }
     
-    // 尝试提取边信息（如果有）
+    // Thử trích xuất thông tin cạnh (nếu có)
     const edgesSection = text.match(/### 相关边:\n([\s\S]*?)(?=\n###|$)/)
     if (edgesSection) {
       const lines = edgesSection[1].split('\n').filter(l => l.trim().startsWith('-'))
@@ -937,7 +937,7 @@ const parseQuickSearch = (text) => {
       }).filter(Boolean)
     }
     
-    // 尝试提取节点信息（如果有）
+    // Thử trích xuất thông tin nút (nếu có)
     const nodesSection = text.match(/### 相关节点:\n([\s\S]*?)(?=\n###|$)/)
     if (nodesSection) {
       const lines = nodesSection[1].split('\n').filter(l => l.trim().startsWith('-'))
@@ -1225,7 +1225,7 @@ const PanoramaDisplay = {
               h('div', { class: 'fact-item historical', key: i }, [
                 h('span', { class: 'fact-number' }, i + 1),
                 h('div', { class: 'fact-content' }, [
-                  // 尝试提取时间信息 [time - time]
+                  // Thử trích xuất thông tin thời gian [time - time]
                   (() => {
                     const timeMatch = fact.match(/^\[(.+?)\]\s*(.*)$/)
                     if (timeMatch) {
@@ -1292,16 +1292,16 @@ const InterviewDisplay = {
     
     const activeIndex = ref(0)
     const expandedAnswers = ref(new Set())
-    // 为每个问题-回答对维护独立的平台选择状态
+    // Duy trì trạng thái lựa chọn nền tảng riêng cho mỗi cặp câu hỏi-trả lời
     const platformTabs = reactive({}) // { 'agentIdx-qIdx': 'twitter' | 'reddit' }
     
-    // 获取某个问题的当前平台选择
+    // Lấy lựa chọn nền tảng hiện tại của một câu hỏi
     const getPlatformTab = (agentIdx, qIdx) => {
       const key = `${agentIdx}-${qIdx}`
       return platformTabs[key] || 'twitter'
     }
     
-    // 设置某个问题的平台选择
+    // Thiết lập lựa chọn nền tảng cho một câu hỏi
     const setPlatformTab = (agentIdx, qIdx, platform) => {
       const key = `${agentIdx}-${qIdx}`
       platformTabs[key] = platform
@@ -1323,25 +1323,25 @@ const InterviewDisplay = {
       return text.substring(0, 400) + '...'
     }
     
-    // 检查是否为平台占位文本
+    // Kiểm tra xem có phải là placeholder nền tảng không
     const isPlaceholderText = (text) => {
       if (!text) return true
       const t = text.trim()
       return t === '（该平台未获得回复）' || t === '(该平台未获得回复)' || t === '[无回复]'
     }
 
-    // 尝试按问题编号分割回答
+    // Thử chia câu trả lời theo số thứ tự câu hỏi
     const splitAnswerByQuestions = (answerText, questionCount) => {
       if (!answerText || questionCount <= 0) return [answerText]
       if (isPlaceholderText(answerText)) return ['']
 
-      // 支持两种编号格式：
-      // 1. "问题X：" 或 "问题X:" （中文格式，后端新格式）
-      // 2. "1. " 或 "\n1. " （数字+点，旧格式兼容）
+      // Hỗ trợ hai định dạng đánh số:
+      // 1. Định dạng tiếng Trung "问题X：" hoặc "问题X:" (định dạng mới của backend)
+      // 2. "1. " hoặc "\n1. " (số + dấu chấm, tương thích định dạng cũ)
       let matches = []
       let match
 
-      // 优先尝试 "问题X：" 格式
+      // Ưu tiên thử định dạng tiếng Trung "问题X："
       const cnPattern = /(?:^|[\r\n]+)问题(\d+)[：:]\s*/g
       while ((match = cnPattern.exec(answerText)) !== null) {
         matches.push({
@@ -1351,7 +1351,7 @@ const InterviewDisplay = {
         })
       }
 
-      // 如果没匹配到，回退到 "数字." 格式
+      // Nếu không khớp, fallback về định dạng "số."
       if (matches.length === 0) {
         const numPattern = /(?:^|[\r\n]+)(\d+)\.\s+/g
         while ((match = numPattern.exec(answerText)) !== null) {
@@ -1363,7 +1363,7 @@ const InterviewDisplay = {
         }
       }
 
-      // 如果没有找到编号或只找到一个，返回整体
+      // Nếu không tìm thấy số thứ tự hoặc chỉ tìm được một, trả về toàn bộ
       if (matches.length <= 1) {
         const cleaned = answerText
           .replace(/^问题\d+[：:]\s*/, '')
@@ -1372,7 +1372,7 @@ const InterviewDisplay = {
         return [cleaned || answerText]
       }
 
-      // 按编号提取各部分
+      // Trích xuất từng phần theo số thứ tự
       const parts = []
       for (let i = 0; i < matches.length; i++) {
         const current = matches[i]
@@ -1393,7 +1393,7 @@ const InterviewDisplay = {
       return [answerText]
     }
     
-    // 获取某个问题对应的回答
+    // Lấy câu trả lời tương ứng với một câu hỏi
     const getAnswerForQuestion = (interview, qIdx, platform) => {
       const answer = platform === 'twitter' ? interview.twitterAnswer : (interview.redditAnswer || interview.twitterAnswer)
       if (!answer || isPlaceholderText(answer)) return answer || ''
@@ -1401,21 +1401,21 @@ const InterviewDisplay = {
       const questionCount = interview.questions?.length || 1
       const answers = splitAnswerByQuestions(answer, questionCount)
 
-      // 分割成功且索引有效
+      // Chia thành công và chỉ số hợp lệ
       if (answers.length > 1 && qIdx < answers.length) {
         return answers[qIdx] || ''
       }
 
-      // 分割失败：第一个问题返回完整回答，其余返回空
+      // Chia thất bại: câu hỏi đầu tiên trả về toàn bộ câu trả lời, các câu còn lại trả về rỗng
       return qIdx === 0 ? answer : ''
     }
     
-    // 检查某个问题是否有双平台回答（过滤占位文本）
+    // Kiểm tra xem một câu hỏi có câu trả lời trên cả hai nền tảng không (lọc placeholder)
     const hasMultiplePlatforms = (interview, qIdx) => {
       if (!interview.twitterAnswer || !interview.redditAnswer) return false
       const twitterAnswer = getAnswerForQuestion(interview, qIdx, 'twitter')
       const redditAnswer = getAnswerForQuestion(interview, qIdx, 'reddit')
-      // 两个平台都有真实回答（非占位文本）且内容不同
+      // Cả hai nền tảng đều có câu trả lời thực sự (không phải placeholder) và nội dung khác nhau
       return !isPlaceholderText(twitterAnswer) && !isPlaceholderText(redditAnswer) && twitterAnswer !== redditAnswer
     }
     
@@ -1465,13 +1465,13 @@ const InterviewDisplay = {
           ])
         ]),
         
-        // Selection Reason - 选择理由
+        // Selection Reason - Lý do lựa chọn
         props.result.interviews[activeIndex.value]?.selectionReason && h('div', { class: 'selection-reason' }, [
           h('div', { class: 'reason-label' }, '选择理由'),
           h('div', { class: 'reason-content' }, props.result.interviews[activeIndex.value].selectionReason)
         ]),
         
-        // Q&A Conversation Thread - 一问一答样式
+        // Q&A Conversation Thread - Phong cách một câu hỏi một câu trả lời
         h('div', { class: 'qa-thread' }, 
           (props.result.interviews[activeIndex.value]?.questions?.length > 0 
             ? props.result.interviews[activeIndex.value].questions 
@@ -1501,7 +1501,7 @@ const InterviewDisplay = {
                 h('div', { class: 'qa-content' }, [
                   h('div', { class: 'qa-answer-header' }, [
                     h('div', { class: 'qa-sender' }, interview?.name || 'Agent'),
-                    // 双平台切换按钮（仅在有真实双平台回答时显示）
+                    // Nút chuyển đổi nền tảng kép (chỉ hiển thị khi có câu trả lời thực sự trên cả hai nền tảng)
                     hasDualPlatform && h('div', { class: 'platform-switch' }, [
                       h('button', {
                         class: ['platform-btn', { active: currentPlatform === 'twitter' }],
@@ -1533,7 +1533,7 @@ const InterviewDisplay = {
                           .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
                           .replace(/\n/g, '<br>')
                   }),
-                  // Expand/Collapse Button（占位文本不显示）
+                  // Nút Mở rộng/Ẩn (không hiển thị văn bản placeholder)
                   !isPlaceholder && answerText.length > 400 && h('button', {
                     class: 'expand-answer-btn',
                     onClick: () => toggleAnswer(expandKey)
@@ -1764,18 +1764,18 @@ const isFinalizing = computed(() => {
   return !isComplete.value && isPlanningDone.value && totalSections.value > 0 && completedSections.value >= totalSections.value
 })
 
-// 当前活跃的步骤（用于顶部显示）
+// Bước hiện tại đang hoạt động (được sử dụng để hiển thị ở trên cùng)
 const activeStep = computed(() => {
   const steps = workflowSteps.value
-  // 找到当前 active 的步骤
+  // Tìm bước active hiện tại
   const active = steps.find(s => s.status === 'active')
   if (active) return active
   
-  // 如果没有 active，返回最后一个 done 的步骤
+  // Nếu không có active, trả về bước done cuối cùng
   const doneSteps = steps.filter(s => s.status === 'done')
   if (doneSteps.length > 0) return doneSteps[doneSteps.length - 1]
   
-  // 否则返回第一个步骤
+  // Nếu không, trả về bước đầu tiên
   return steps[0] || { noLabel: '--', title: '等待开始', status: 'todo', meta: '' }
 })
 
@@ -1869,25 +1869,25 @@ const truncateText = (text, maxLen) => {
 const renderMarkdown = (content) => {
   if (!content) return ''
   
-  // 去掉开头的二级标题（## xxx），因为章节标题已在外层显示
+  // Loại bỏ tiêu đề cấp 2 ở đầu (## xxx) vì tiêu đề phần đã được hiển thị ở lớp bên ngoài
   let processedContent = content.replace(/^##\s+.+\n+/, '')
   
-  // 处理代码块
+  // Xử lý khối mã
   let html = processedContent.replace(/```(\w*)\n([\s\S]*?)```/g, '<pre class="code-block"><code>$2</code></pre>')
   
-  // 处理行内代码
+  // Xử lý mã nội tuyến
   html = html.replace(/`([^`]+)`/g, '<code class="inline-code">$1</code>')
   
-  // 处理标题
+  // Xử lý tiêu đề
   html = html.replace(/^#### (.+)$/gm, '<h5 class="md-h5">$1</h5>')
   html = html.replace(/^### (.+)$/gm, '<h4 class="md-h4">$1</h4>')
   html = html.replace(/^## (.+)$/gm, '<h3 class="md-h3">$1</h3>')
   html = html.replace(/^# (.+)$/gm, '<h2 class="md-h2">$1</h2>')
   
-  // 处理引用块
+  // Xử lý khối trích dẫn
   html = html.replace(/^> (.+)$/gm, '<blockquote class="md-quote">$1</blockquote>')
   
-  // 处理列表 - 支持子列表
+  // Xử lý danh sách - hỗ trợ danh sách con
   html = html.replace(/^(\s*)- (.+)$/gm, (match, indent, text) => {
     const level = Math.floor(indent.length / 2)
     return `<li class="md-li" data-level="${level}">${text}</li>`
@@ -1897,52 +1897,52 @@ const renderMarkdown = (content) => {
     return `<li class="md-oli" data-level="${level}">${text}</li>`
   })
 
-  // 包装无序列表
+  // Đóng gói danh sách không có thứ tự
   html = html.replace(/(<li class="md-li"[^>]*>.*?<\/li>\s*)+/g, '<ul class="md-ul">$&</ul>')
-  // 包装有序列表
+  // Đóng gói danh sách có thứ tự
   html = html.replace(/(<li class="md-oli"[^>]*>.*?<\/li>\s*)+/g, '<ol class="md-ol">$&</ol>')
 
-  // 清理列表项之间的所有空白
+  // Xóa tất cả khoảng trắng giữa các mục danh sách
   html = html.replace(/<\/li>\s+<li/g, '</li><li')
-  // 清理列表开始标签后的空白
+  // Xóa khoảng trắng sau thẻ bắt đầu danh sách
   html = html.replace(/<ul class="md-ul">\s+/g, '<ul class="md-ul">')
   html = html.replace(/<ol class="md-ol">\s+/g, '<ol class="md-ol">')
-  // 清理列表结束标签前的空白
+  // Xóa khoảng trắng trước thẻ kết thúc danh sách
   html = html.replace(/\s+<\/ul>/g, '</ul>')
   html = html.replace(/\s+<\/ol>/g, '</ol>')
   
-  // 处理粗体和斜体
+  // Xử lý chữ đậm và chữ nghiêng
   html = html.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
   html = html.replace(/\*(.+?)\*/g, '<em>$1</em>')
   html = html.replace(/_(.+?)_/g, '<em>$1</em>')
   
-  // 处理分隔线
+  // Xử lý đường phân cách
   html = html.replace(/^---$/gm, '<hr class="md-hr">')
   
-  // 处理换行 - 空行变成段落分隔，单换行变成 <br>
+  // Xử lý ngắt dòng - dòng trống thành phân cách đoạn, ngắt dòng đơn thành <br>
   html = html.replace(/\n\n/g, '</p><p class="md-p">')
   html = html.replace(/\n/g, '<br>')
   
-  // 包装在段落中
+  // Đóng gói trong đoạn
   html = '<p class="md-p">' + html + '</p>'
   
-  // 清理空段落
+  // Xóa đoạn trống
   html = html.replace(/<p class="md-p"><\/p>/g, '')
   html = html.replace(/<p class="md-p">(<h[2-5])/g, '$1')
   html = html.replace(/(<\/h[2-5]>)<\/p>/g, '$1')
   html = html.replace(/<p class="md-p">(<ul|<ol|<blockquote|<pre|<hr)/g, '$1')
   html = html.replace(/(<\/ul>|<\/ol>|<\/blockquote>|<\/pre>)<\/p>/g, '$1')
-  // 清理块级元素前后的 <br> 标签
+  // Xóa thẻ <br> trước và sau các phần tử cấp khối
   html = html.replace(/<br>\s*(<ul|<ol|<blockquote)/g, '$1')
   html = html.replace(/(<\/ul>|<\/ol>|<\/blockquote>)\s*<br>/g, '$1')
-  // 清理 <p><br> 紧跟块级元素的情况（多余空行导致）
+  // Xóa trường hợp <p><br> ngay sau các phần tử cấp khối (do dòng trống thêm)
   html = html.replace(/<p class="md-p">(<br>\s*)+(<ul|<ol|<blockquote|<pre|<hr)/g, '$2')
-  // 清理连续的 <br> 标签
+  // Xóa các thẻ <br> liên tiếp
   html = html.replace(/(<br>\s*){2,}/g, '<br>')
-  // 清理块级元素后紧跟的段落开始标签前的 <br>
+  // Xóa <br> trước thẻ bắt đầu đoạn ngay sau phần tử cấp khối
   html = html.replace(/(<\/ol>|<\/ul>|<\/blockquote>)<br>(<p|<div)/g, '$1$2')
 
-  // 修复非连续有序列表的编号：当单项 <ol> 被段落内容隔开时，保持编号递增
+  // Sửa đánh số danh sách có thứ tự không liên tục: khi một <ol> được ngăn cách bởi nội dung đoạn, giữ đánh số tăng dần
   const tokens = html.split(/(<ol class="md-ol">(?:<li class="md-oli"[^>]*>[\s\S]*?<\/li>)+<\/ol>)/g)
   let olCounter = 0
   let inSequence = false
@@ -2008,7 +2008,7 @@ const getActionLabel = (action) => {
 const getLogLevelClass = (log) => {
   if (log.includes('ERROR') || log.includes('错误')) return 'error'
   if (log.includes('WARNING') || log.includes('警告')) return 'warning'
-  // INFO 使用默认颜色，不标记为 success
+  // INFO sử dụng màu mặc định, không đánh dấu là thành công
   return ''
 }
 
@@ -2037,11 +2037,11 @@ const fetchAgentLog = async () => {
             currentSectionIndex.value = log.section_index
           }
 
-          // section_complete - 章节生成完成
+          // section_complete - Phần hoàn thành tạo
           if (log.action === 'section_complete') {
             if (log.details?.content) {
               generatedSections.value[log.section_index] = log.details.content
-              // 自动展开刚生成的章节
+              // Tự động mở rộng phần vừa tạo
               expandedContent.value.add(log.section_index - 1)
               currentSectionIndex.value = null
             }
@@ -2049,10 +2049,10 @@ const fetchAgentLog = async () => {
           
           if (log.action === 'report_complete') {
             isComplete.value = true
-            currentSectionIndex.value = null  // 确保清除 loading 状态
+            currentSectionIndex.value = null  // Đảm bảo xóa trạng thái tải
             emit('update-status', 'completed')
             stopPolling()
-            // 滚动逻辑统一在循环结束后的 nextTick 中处理
+            // Logic cuộn được xử lý thống nhất trong nextTick sau khi vòng lặp kết thúc
           }
           
           if (log.action === 'report_start') {
@@ -2064,7 +2064,7 @@ const fetchAgentLog = async () => {
         
         nextTick(() => {
           if (rightPanel.value) {
-            // 如果任务已完成，滚动到顶部；否则滚动到底部跟随最新日志
+            // Nếu tác vụ hoàn thành, cuộn đến đầu; nếu không cuộn đến cuối theo dõi nhật ký mới nhất
             if (isComplete.value) {
               rightPanel.value.scrollTop = 0
             } else {
@@ -2079,39 +2079,39 @@ const fetchAgentLog = async () => {
   }
 }
 
-// 提取最终答案内容 - 从 LLM response 中提取章节内容
+// Trích xuất nội dung câu trả lời cuối cùng - trích xuất nội dung phần từ LLM response
 const extractFinalContent = (response) => {
   if (!response) return null
   
-  // 尝试提取 <final_answer> 标签内的内容
+  // Thử trích xuất nội dung bên trong thẻ <final_answer>
   const finalAnswerTagMatch = response.match(/<final_answer>([\s\S]*?)<\/final_answer>/)
   if (finalAnswerTagMatch) {
     return finalAnswerTagMatch[1].trim()
   }
   
-  // 尝试找 Final Answer: 后面的内容（支持多种格式）
-  // 格式1: Final Answer:\n\n内容
-  // 格式2: Final Answer: 内容
+  // Thử tìm nội dung sau "Final Answer:" (hỗ trợ nhiều định dạng)
+  // Định dạng 1: Final Answer:\n\nNội dung
+  // Định dạng 2: Final Answer: Nội dung
   const finalAnswerMatch = response.match(/Final\s*Answer:\s*\n*([\s\S]*)$/i)
   if (finalAnswerMatch) {
     return finalAnswerMatch[1].trim()
   }
   
-  // 尝试找 最终答案: 后面的内容
+  // Thử tìm nội dung sau "最终答案:" (tiếng Trung cho Final Answer)
   const chineseFinalMatch = response.match(/最终答案[:：]\s*\n*([\s\S]*)$/i)
   if (chineseFinalMatch) {
     return chineseFinalMatch[1].trim()
   }
   
-  // 如果以 ## 或 # 或 > 开头，可能是直接的 markdown 内容
+  // Nếu bắt đầu bằng ## hoặc # hoặc >, có thể là nội dung markdown trực tiếp
   const trimmedResponse = response.trim()
   if (trimmedResponse.match(/^[#>]/)) {
     return trimmedResponse
   }
   
-  // 如果内容较长且包含markdown格式，尝试移除思考过程后返回
+  // Nếu nội dung khá dài và chứa định dạng markdown, thử loại bỏ quá trình suy nghĩ rồi trả về
   if (response.length > 300 && (response.includes('**') || response.includes('>'))) {
-    // 移除 Thought: 开头的思考过程
+    // Loại bỏ quá trình suy nghĩ bắt đầu bằng "Thought:"
     const thoughtMatch = response.match(/^Thought:[\s\S]*?(?=\n\n[^T]|\n\n$)/i)
     if (thoughtMatch) {
       const afterThought = response.substring(thoughtMatch[0].length).trim()
@@ -2456,7 +2456,7 @@ watch(() => props.reportId, (newId) => {
 .section-number {
   font-family: 'JetBrains Mono', monospace;
   font-size: 16px;
-  color: #9CA3AF; /* 深灰色，不随状态变化 */
+  color: #9CA3AF; /* Màu xám đậm, không thay đổi theo trạng thái */
   font-weight: 500;
 }
 
@@ -3898,7 +3898,7 @@ watch(() => props.reportId, (newId) => {
   overflow: hidden;
 }
 
-/* Selection Reason - 选择理由 */
+/* Selection Reason - Lý do lựa chọn */
 :deep(.interview-display .selection-reason) {
   background: #F8FAFC;
   border: 1px solid #E2E8F0;
@@ -5097,7 +5097,7 @@ watch(() => props.reportId, (newId) => {
   border-radius: 4px;
 }
 
-/* Console Logs - 与 Step3Simulation.vue 保持一致 */
+/* Console Logs - giống với Step3Simulation.vue */
 .console-logs {
   background: #000;
   color: #DDD;

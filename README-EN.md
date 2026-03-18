@@ -4,7 +4,7 @@
 
 <a href="https://trendshift.io/repositories/16144" target="_blank"><img src="https://trendshift.io/api/badge/repositories/16144" alt="666ghj%2FMiroFish | Trendshift" style="width: 250px; height: 55px;" width="250" height="55"/></a>
 
-简洁通用的群体智能引擎，预测万物
+Engine Trí Tuệ Bầy Đàn Đơn Giản & Toàn Năng — Dự Đoán Mọi Thứ
 </br>
 <em>A Simple and Universal Swarm Intelligence Engine, Predicting Anything</em>
 
@@ -20,7 +20,7 @@
 [![X](https://img.shields.io/badge/X-Follow-000000?style=flat-square&logo=x&logoColor=white)](https://x.com/mirofish_ai)
 [![Instagram](https://img.shields.io/badge/Instagram-Follow-E4405F?style=flat-square&logo=instagram&logoColor=white)](https://www.instagram.com/mirofish_ai/)
 
-[English](./README-EN.md) | [中文文档](./README.md)
+[English](./README-EN.md) | [Tiếng Việt](./README.md)
 
 </div>
 
@@ -49,16 +49,16 @@ Welcome to visit our online demo environment and experience a prediction simulat
 <div align="center">
 <table>
 <tr>
-<td><img src="./static/image/Screenshot/运行截图1.png" alt="Screenshot 1" width="100%"/></td>
-<td><img src="./static/image/Screenshot/运行截图2.png" alt="Screenshot 2" width="100%"/></td>
+<td><img src="./static/image/Screenshot/运行截图1.png" alt="Ảnh chụp màn hình 1" width="100%"/></td>
+<td><img src="./static/image/Screenshot/运行截图2.png" alt="Ảnh chụp màn hình 2" width="100%"/></td>
 </tr>
 <tr>
-<td><img src="./static/image/Screenshot/运行截图3.png" alt="Screenshot 3" width="100%"/></td>
-<td><img src="./static/image/Screenshot/运行截图4.png" alt="Screenshot 4" width="100%"/></td>
+<td><img src="./static/image/Screenshot/运行截图3.png" alt="Ảnh chụp màn hình 3" width="100%"/></td>
+<td><img src="./static/image/Screenshot/运行截图4.png" alt="Ảnh chụp màn hình 4" width="100%"/></td>
 </tr>
 <tr>
-<td><img src="./static/image/Screenshot/运行截图5.png" alt="Screenshot 5" width="100%"/></td>
-<td><img src="./static/image/Screenshot/运行截图6.png" alt="Screenshot 6" width="100%"/></td>
+<td><img src="./static/image/Screenshot/运行截图5.png" alt="Ảnh chụp màn hình 5" width="100%"/></td>
+<td><img src="./static/image/Screenshot/运行截图6.png" alt="Ảnh chụp màn hình 6" width="100%"/></td>
 </tr>
 </table>
 </div>

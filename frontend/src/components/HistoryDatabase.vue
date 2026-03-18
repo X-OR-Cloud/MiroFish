@@ -4,20 +4,20 @@
     :class="{ 'no-projects': projects.length === 0 && !loading }"
     ref="historyContainer"
   >
-    <!-- 背景装饰：技术网格线（只在有项目时显示） -->
+    <!-- Trang trí nền: đường lưới kỹ thuật (chỉ hiển thị khi có dự án) -->
     <div v-if="projects.length > 0 || loading" class="tech-grid-bg">
       <div class="grid-pattern"></div>
       <div class="gradient-overlay"></div>
     </div>
 
-    <!-- 标题区域 -->
+    <!-- Vùng tiêu đề -->
     <div class="section-header">
       <div class="section-line"></div>
-      <span class="section-title">推演记录</span>
+      <span class="section-title">Hồ sơ Suy luận</span>
       <div class="section-line"></div>
     </div>
 
-    <!-- 卡片容器（只在有项目时显示） -->
+    <!-- Thùng chứa thẻ (chỉ hiển thị khi có dự án) -->
     <div v-if="projects.length > 0" class="cards-container" :class="{ expanded: isExpanded }" :style="containerStyle">
       <div 
         v-for="(project, index) in projects" 
@@ -29,7 +29,7 @@
         @mouseleave="hoveringCard = null"
         @click="navigateToProject(project)"
       >
-        <!-- 卡片头部：simulation_id 和 功能可用状态 -->
+        <!-- Tiêu đề thẻ: simulation_id và trạng thái tính năng có sẵn -->
         <div class="card-header">
           <span class="card-id">{{ formatSimulationId(project.simulation_id) }}</span>
           <div class="card-status-icons">
@@ -40,7 +40,7 @@
             >◇</span>
             <span 
               class="status-icon available" 
-              title="环境搭建"
+              title="Thiết lập môi trường"
             >◈</span>
             <span 
               class="status-icon" 
@@ -50,9 +50,9 @@
           </div>
         </div>
 
-        <!-- 文件列表区域 -->
+        <!-- Vùng danh sách tập tin -->
         <div class="card-files-wrapper">
-          <!-- 角落装饰 - 取景框风格 -->
+          <!-- Trang trí góc - Kiểu khung lấy cảnh -->
           <div class="corner-mark top-left-only"></div>
           
           <!-- 文件列表 -->
@@ -65,25 +65,25 @@
               <span class="file-tag" :class="getFileType(file.filename)">{{ getFileTypeLabel(file.filename) }}</span>
               <span class="file-name">{{ truncateFilename(file.filename, 20) }}</span>
             </div>
-            <!-- 如果有更多文件，显示提示 -->
+            <!-- Nếu có nhiều file hơn, hãy hiển thị gợi ý -->
             <div v-if="project.files.length > 3" class="files-more">
-              +{{ project.files.length - 3 }} 个文件
+              +{{ project.files.length - 3 }} tập tin
             </div>
           </div>
-          <!-- 无文件时的占位 -->
+          <!-- Chỗ để trống khi không có tập tin -->
           <div class="files-empty" v-else>
             <span class="empty-file-icon">◇</span>
-            <span class="empty-file-text">暂无文件</span>
+            <span class="empty-file-text">Không có tập tin</span>
           </div>
         </div>
 
-        <!-- 卡片标题（使用模拟需求的前20字作为标题） -->
+        <!-- Tiêu đề thẻ (sử dụng 20 ký tự đầu tiên của yêu cầu mô phỏng làm tiêu đề) -->
         <h3 class="card-title">{{ getSimulationTitle(project.simulation_requirement) }}</h3>
 
-        <!-- 卡片描述（模拟需求完整展示） -->
+        <!-- Mô tả thẻ (yêu cầu mô phỏng được hiển thị đầy đủ) -->
         <p class="card-desc">{{ truncateText(project.simulation_requirement, 55) }}</p>
 
-        <!-- 卡片底部 -->
+        <!-- Dưới cùng thẻ -->
         <div class="card-footer">
           <div class="card-datetime">
             <span class="card-date">{{ formatDate(project.created_at) }}</span>
@@ -94,23 +94,23 @@
           </span>
         </div>
         
-        <!-- 底部装饰线 (hover时展开) -->
+        <!-- Dòng trang trí dưới cùng (mở rộng khi di chuột) -->
         <div class="card-bottom-line"></div>
       </div>
     </div>
 
-    <!-- 加载状态 -->
+    <!-- Trạng thái tải -->
     <div v-if="loading" class="loading-state">
       <span class="loading-spinner"></span>
-      <span class="loading-text">加载中...</span>
+      <span class="loading-text">Đang tải...</span>
     </div>
 
-    <!-- 历史回放详情弹窗 -->
+    <!-- Cửa sổ bật lên chi tiết phát lại lịch sử -->
     <Teleport to="body">
       <Transition name="modal">
         <div v-if="selectedProject" class="modal-overlay" @click.self="closeModal">
           <div class="modal-content">
-            <!-- 弹窗头部 -->
+            <!-- Tiêu đề cửa sổ bật lên -->
             <div class="modal-header">
               <div class="modal-title-section">
                 <span class="modal-id">{{ formatSimulationId(selectedProject.simulation_id) }}</span>
@@ -122,35 +122,35 @@
               <button class="modal-close" @click="closeModal">×</button>
             </div>
 
-            <!-- 弹窗内容 -->
+            <!-- Nội dung cửa sổ bật lên -->
             <div class="modal-body">
               <!-- 模拟需求 -->
               <div class="modal-section">
-                <div class="modal-label">模拟需求</div>
-                <div class="modal-requirement">{{ selectedProject.simulation_requirement || '无' }}</div>
+                <div class="modal-label">Yêu cầu mô phỏng</div>
+                <div class="modal-requirement">{{ selectedProject.simulation_requirement || 'Không' }}</div>
               </div>
 
               <!-- 文件列表 -->
               <div class="modal-section">
-                <div class="modal-label">关联文件</div>
+                <div class="modal-label">Tập tin liên quan</div>
                 <div class="modal-files" v-if="selectedProject.files && selectedProject.files.length > 0">
                   <div v-for="(file, index) in selectedProject.files" :key="index" class="modal-file-item">
                     <span class="file-tag" :class="getFileType(file.filename)">{{ getFileTypeLabel(file.filename) }}</span>
                     <span class="modal-file-name">{{ file.filename }}</span>
                   </div>
                 </div>
-                <div class="modal-empty" v-else>暂无关联文件</div>
+                <div class="modal-empty" v-else>Không có tập tin liên quan</div>
               </div>
             </div>
 
-            <!-- 推演回放分割线 -->
+            <!-- Dòng phân tách phát lại suy luận -->
             <div class="modal-divider">
               <span class="divider-line"></span>
-              <span class="divider-text">推演回放</span>
+              <span class="divider-text">Phát lại suy luận</span>
               <span class="divider-line"></span>
             </div>
 
-            <!-- 导航按钮 -->
+            <!-- Nút điều hướng -->
             <div class="modal-actions">
               <button 
                 class="modal-btn btn-project" 
@@ -159,7 +159,7 @@
               >
                 <span class="btn-step">Step1</span>
                 <span class="btn-icon">◇</span>
-                <span class="btn-text">图谱构建</span>
+                <span class="btn-text">Xây dựng đồ thị</span>
               </button>
               <button 
                 class="modal-btn btn-simulation" 
@@ -167,7 +167,7 @@
               >
                 <span class="btn-step">Step2</span>
                 <span class="btn-icon">◈</span>
-                <span class="btn-text">环境搭建</span>
+                <span class="btn-text">Thiết lập môi trường</span>
               </button>
               <button 
                 class="modal-btn btn-report" 
@@ -176,12 +176,12 @@
               >
                 <span class="btn-step">Step4</span>
                 <span class="btn-icon">◆</span>
-                <span class="btn-text">分析报告</span>
+                <span class="btn-text">Báo cáo phân tích</span>
               </button>
             </div>
-            <!-- 不可回放提示 -->
+            <!-- Gợi ý không thể phát lại -->
             <div class="modal-playback-hint">
-              <span class="hint-text">Step3「开始模拟」与 Step5「深度互动」需在运行中启动，不支持历史回放</span>
+              <span class="hint-text">Step3「Khởi động mô phỏng」và Step5「Tương tác sâu」cần được khởi động khi chạy, không hỗ trợ phát lại lịch sử</span>
             </div>
           </div>
         </div>
@@ -198,56 +198,56 @@ import { getSimulationHistory } from '../api/simulation'
 const router = useRouter()
 const route = useRoute()
 
-// 状态
+// Trạng thái
 const projects = ref([])
 const loading = ref(true)
 const isExpanded = ref(false)
 const hoveringCard = ref(null)
 const historyContainer = ref(null)
-const selectedProject = ref(null)  // 当前选中的项目（用于弹窗）
+const selectedProject = ref(null)  // Dự án đang chọn hiện tại (dùng cho cửa sổ bật lên)
 let observer = null
-let isAnimating = false  // 动画锁，防止闪烁
-let expandDebounceTimer = null  // 防抖定时器
-let pendingState = null  // 记录待执行的目标状态
+let isAnimating = false  // Khóa hoạt hình, ngăn chặn nhấp nháy
+let expandDebounceTimer = null  // Bộ hẹn giờ debounce
+let pendingState = null  // Ghi lại trạng thái mục tiêu đang chờ thực thi
 
-// 卡片布局配置 - 调整为更宽的比例
+// Cấu hình bố cục thẻ - Điều chỉnh thành tỷ lệ rộng hơn
 const CARDS_PER_ROW = 4
 const CARD_WIDTH = 280  
 const CARD_HEIGHT = 280 
 const CARD_GAP = 24
 
-// 动态计算容器高度样式
+// Tính toán động kiểu chiều cao thùng chứa
 const containerStyle = computed(() => {
   if (!isExpanded.value) {
-    // 折叠态：固定高度
+    // Trạng thái thu gọn: chiều cao cố định
     return { minHeight: '420px' }
   }
   
-  // 展开态：根据卡片数量动态计算高度
+  // Trạng thái mở rộng: tính toán động chiều cao dựa trên số lượng thẻ
   const total = projects.value.length
   if (total === 0) {
     return { minHeight: '280px' }
   }
   
   const rows = Math.ceil(total / CARDS_PER_ROW)
-  // 计算实际需要的高度：行数 * 卡片高度 + (行数-1) * 间距 + 少量底部间距
+  // Tính chiều cao thực tế cần thiết: hàng * chiều cao thẻ + (hàng-1) * khoảng cách + khoảng cách dưới cùng nhỏ
   const expandedHeight = rows * CARD_HEIGHT + (rows - 1) * CARD_GAP + 10
   
   return { minHeight: `${expandedHeight}px` }
 })
 
-// 获取卡片样式
+// Lấy kiểu thẻ
 const getCardStyle = (index) => {
   const total = projects.value.length
   
   if (isExpanded.value) {
-    // 展开态：网格布局
+    // Trạng thái mở rộng: bố cục lưới
     const transition = 'transform 700ms cubic-bezier(0.23, 1, 0.32, 1), opacity 700ms cubic-bezier(0.23, 1, 0.32, 1), box-shadow 0.3s ease, border-color 0.3s ease'
 
     const col = index % CARDS_PER_ROW
     const row = Math.floor(index / CARDS_PER_ROW)
     
-    // 计算当前行的卡片数量，确保每行居中
+    // Tính số lượng thẻ trong hàng hiện tại, đảm bảo mỗi hàng ở giữa
     const currentRowStart = row * CARDS_PER_ROW
     const currentRowCards = Math.min(CARDS_PER_ROW, total - currentRowStart)
     
@@ -257,7 +257,7 @@ const getCardStyle = (index) => {
     const colInRow = index % CARDS_PER_ROW
     const x = startX + colInRow * (CARD_WIDTH + CARD_GAP)
     
-    // 向下展开，增加与标题的间距
+    // Mở rộng xuống, tăng khoảng cách với tiêu đề
     const y = 20 + row * (CARD_HEIGHT + CARD_GAP)
 
     return {
@@ -267,14 +267,14 @@ const getCardStyle = (index) => {
       transition: transition
     }
   } else {
-    // 折叠态：扇形堆叠
+    // Trạng thái thu gọn: xếp chồng hình quạt
     const transition = 'transform 700ms cubic-bezier(0.23, 1, 0.32, 1), opacity 700ms cubic-bezier(0.23, 1, 0.32, 1), box-shadow 0.3s ease, border-color 0.3s ease'
 
     const centerIndex = (total - 1) / 2
     const offset = index - centerIndex
     
     const x = offset * 35
-    // 调整起始位置，靠近标题但保持适当间距
+    // Điều chỉnh vị trí bắt đầu, gần tiêu đề nhưng giữ khoảng cách thích hợp
     const y = 25 + Math.abs(offset) * 8
     const r = offset * 3
     const s = 0.95 - Math.abs(offset) * 0.05
@@ -288,24 +288,24 @@ const getCardStyle = (index) => {
   }
 }
 
-// 根据轮数进度获取样式类
+// Lấy lớp kiểu dựa trên tiến trình vòng
 const getProgressClass = (simulation) => {
   const current = simulation.current_round || 0
   const total = simulation.total_rounds || 0
   
   if (total === 0 || current === 0) {
-    // 未开始
+    // Chưa bắt đầu
     return 'not-started'
   } else if (current >= total) {
-    // 已完成
+    // Đã hoàn thành
     return 'completed'
   } else {
-    // 进行中
+    // Đang diễn ra
     return 'in-progress'
   }
 }
 
-// 格式化日期（只显示日期部分）
+// Định dạng ngày (chỉ hiển thị phần ngày)
 const formatDate = (dateStr) => {
   if (!dateStr) return ''
   try {
@@ -316,7 +316,7 @@ const formatDate = (dateStr) => {
   }
 }
 
-// 格式化时间（显示时:分）
+// Định dạng thời gian (hiển thị giờ: phút)
 const formatTime = (dateStr) => {
   if (!dateStr) return ''
   try {
@@ -329,35 +329,35 @@ const formatTime = (dateStr) => {
   }
 }
 
-// 截断文本
+// Cắt ngắn văn bản
 const truncateText = (text, maxLength) => {
   if (!text) return ''
   return text.length > maxLength ? text.slice(0, maxLength) + '...' : text
 }
 
-// 从模拟需求生成标题（取前20字）
+// Tạo tiêu đề từ yêu cầu mô phỏng (lấy 20 ký tự đầu)
 const getSimulationTitle = (requirement) => {
-  if (!requirement) return '未命名模拟'
+  if (!requirement) return 'Mô phỏng không tên'
   const title = requirement.slice(0, 20)
   return requirement.length > 20 ? title + '...' : title
 }
 
-// 格式化 simulation_id 显示（截取前6位）
+// Hiển thị định dạng simulation_id (lấy 6 ký tự đầu)
 const formatSimulationId = (simulationId) => {
   if (!simulationId) return 'SIM_UNKNOWN'
   const prefix = simulationId.replace('sim_', '').slice(0, 6)
   return `SIM_${prefix.toUpperCase()}`
 }
 
-// 格式化轮数显示（当前轮/总轮数）
+// Hiển thị định dạng vòng (vòng hiện tại / tổng vòng)
 const formatRounds = (simulation) => {
   const current = simulation.current_round || 0
   const total = simulation.total_rounds || 0
-  if (total === 0) return '未开始'
-  return `${current}/${total} 轮`
+  if (total === 0) return 'Chưa bắt đầu'
+  return `${current}/${total} vòng`
 }
 
-// 获取文件类型（用于样式）
+// Lấy loại tập tin (dùng cho kiểu)
 const getFileType = (filename) => {
   if (!filename) return 'other'
   const ext = filename.split('.').pop()?.toLowerCase()
@@ -373,16 +373,16 @@ const getFileType = (filename) => {
   return typeMap[ext] || 'other'
 }
 
-// 获取文件类型标签文本
+// Lấy văn bản nhãn loại tập tin
 const getFileTypeLabel = (filename) => {
   if (!filename) return 'FILE'
   const ext = filename.split('.').pop()?.toUpperCase()
   return ext || 'FILE'
 }
 
-// 截断文件名（保留扩展名）
+// Cắt tên tập tin (giữ lại phần mở rộng)
 const truncateFilename = (filename, maxLength) => {
-  if (!filename) return '未知文件'
+  if (!filename) return 'Tập tin không xác định'
   if (filename.length <= maxLength) return filename
   
   const ext = filename.includes('.') ? '.' + filename.split('.').pop() : ''
@@ -391,17 +391,17 @@ const truncateFilename = (filename, maxLength) => {
   return truncatedName + ext
 }
 
-// 打开项目详情弹窗
+// Mở cửa sổ bật lên chi tiết dự án
 const navigateToProject = (simulation) => {
   selectedProject.value = simulation
 }
 
-// 关闭弹窗
+// Đóng cửa sổ bật lên
 const closeModal = () => {
   selectedProject.value = null
 }
 
-// 导航到图谱构建页面（Project）
+// Điều hướng đến trang xây dựng đồ thị (Project)
 const goToProject = () => {
   if (selectedProject.value?.project_id) {
     router.push({
@@ -412,7 +412,7 @@ const goToProject = () => {
   }
 }
 
-// 导航到环境配置页面（Simulation）
+// Điều hướng đến trang cấu hình môi trường (Simulation)
 const goToSimulation = () => {
   if (selectedProject.value?.simulation_id) {
     router.push({
@@ -423,7 +423,7 @@ const goToSimulation = () => {
   }
 }
 
-// 导航到分析报告页面（Report）
+// Điều hướng đến trang báo cáo phân tích (Report)
 const goToReport = () => {
   if (selectedProject.value?.report_id) {
     router.push({
@@ -434,7 +434,7 @@ const goToReport = () => {
   }
 }
 
-// 加载历史项目
+// Tải các dự án lịch sử
 const loadHistory = async () => {
   try {
     loading.value = true
@@ -443,14 +443,14 @@ const loadHistory = async () => {
       projects.value = response.data || []
     }
   } catch (error) {
-    console.error('加载历史项目失败:', error)
+    console.error('Lỗi tải dự án lịch sử:', error)
     projects.value = []
   } finally {
     loading.value = false
   }
 }
 
-// 初始化 IntersectionObserver
+// Khởi tạo IntersectionObserver
 const initObserver = () => {
   if (observer) {
     observer.disconnect()
@@ -461,47 +461,47 @@ const initObserver = () => {
       entries.forEach((entry) => {
         const shouldExpand = entry.isIntersecting
         
-        // 更新待执行的目标状态（无论是否在动画中都要记录最新的目标状态）
+        // Cập nhật trạng thái mục tiêu đang chờ thực thi (ghi lại trạng thái mục tiêu mới nhất bất kể có đang hoạt hình hay không)
         pendingState = shouldExpand
         
-        // 清除之前的防抖定时器（新的滚动意图会覆盖旧的）
+        // Xóa bộ hẹn giờ debounce trước đó (ý định cuộn mới sẽ ghi đè cái cũ)
         if (expandDebounceTimer) {
           clearTimeout(expandDebounceTimer)
           expandDebounceTimer = null
         }
         
-        // 如果正在动画中，只记录状态，等动画结束后处理
+        // Nếu đang hoạt hình, chỉ ghi lại trạng thái, xử lý sau khi hoạt hình kết thúc
         if (isAnimating) return
         
-        // 如果目标状态与当前状态相同，不需要处理
+        // Nếu trạng thái mục tiêu giống với trạng thái hiện tại, không cần xử lý
         if (shouldExpand === isExpanded.value) {
           pendingState = null
           return
         }
         
-        // 使用防抖延迟状态切换，防止快速闪烁
-        // 展开时延迟较短(50ms)，收起时延迟较长(200ms)以增加稳定性
+        // Sử dụng debounce để trì hoãn chuyển đổi trạng thái, ngăn chặn nhấp nháy nhanh
+        // Khi mở rộng, độ trễ ngắn hơn (50ms), khi đóng lại độ trễ dài hơn (200ms) để tăng ổn định
         const delay = shouldExpand ? 50 : 200
         
         expandDebounceTimer = setTimeout(() => {
-          // 检查是否正在动画
+          // Kiểm tra xem có đang hoạt hình hay không
           if (isAnimating) return
           
-          // 检查待执行状态是否仍需要执行（可能已被后续滚动覆盖）
+          // Kiểm tra xem trạng thái chờ thực thi có cần được thực thi hay không (có thể đã bị cuộn sau này ghi đè)
           if (pendingState === null || pendingState === isExpanded.value) return
           
-          // 设置动画锁
+          // Đặt khóa hoạt hình
           isAnimating = true
           isExpanded.value = pendingState
           pendingState = null
           
-          // 动画完成后解除锁定，并检查是否有待处理的状态变化
+          // Mở khóa sau khi hoạt hình hoàn thành, và kiểm tra xem có thay đổi trạng thái nào đang chờ xử lý không
           setTimeout(() => {
             isAnimating = false
             
-            // 动画结束后，检查是否有新的待执行状态
+            // Sau khi hoạt hình kết thúc, kiểm tra xem có trạng thái chờ thực thi mới hay không
             if (pendingState !== null && pendingState !== isExpanded.value) {
-              // 延迟一小段时间再执行，避免太快切换
+              // Trì hoãn một chút trước khi thực thi, tránh chuyển đổi quá nhanh
               expandDebounceTimer = setTimeout(() => {
                 if (pendingState !== null && pendingState !== isExpanded.value) {
                   isAnimating = true
@@ -518,20 +518,20 @@ const initObserver = () => {
       })
     },
     {
-      // 使用多个阈值，使检测更平滑
+      // Sử dụng nhiều ngưỡng để phát hiện mượt mà hơn
       threshold: [0.4, 0.6, 0.8],
-      // 调整 rootMargin，视口底部向上收缩，需要滚动更多才触发展开
+      // Điều chỉnh rootMargin, phần dưới cùng của khung nhìn co lại hướng lên, cần cuộn nhiều hơn để kích hoạt mở rộng
       rootMargin: '0px 0px -150px 0px'
     }
   )
   
-  // 开始观察
+  // Bắt đầu quan sát
   if (historyContainer.value) {
     observer.observe(historyContainer.value)
   }
 }
 
-// 监听路由变化，当返回首页时重新加载数据
+// Lắng nghe thay đổi tuyến đường, tải lại dữ liệu khi quay lại trang chủ
 watch(() => route.path, (newPath) => {
   if (newPath === '/') {
     loadHistory()
@@ -539,28 +539,28 @@ watch(() => route.path, (newPath) => {
 })
 
 onMounted(async () => {
-  // 确保 DOM 渲染完成后再加载数据
+  // Đảm bảo DOM được kết xuất hoàn tất trước khi tải dữ liệu
   await nextTick()
   await loadHistory()
   
-  // 等待 DOM 渲染后初始化观察器
+  // Khởi tạo trình quan sát sau khi DOM được kết xuất
   setTimeout(() => {
     initObserver()
   }, 100)
 })
 
-// 如果使用 keep-alive，在组件激活时重新加载数据
+// Nếu sử dụng keep-alive, tải lại dữ liệu khi thành phần được kích hoạt
 onActivated(() => {
   loadHistory()
 })
 
 onUnmounted(() => {
-  // 清理 Intersection Observer
+  // Làm sạch Intersection Observer
   if (observer) {
     observer.disconnect()
     observer = null
   }
-  // 清理防抖定时器
+  // Làm sạch bộ hẹn giờ debounce
   if (expandDebounceTimer) {
     clearTimeout(expandDebounceTimer)
     expandDebounceTimer = null
@@ -569,7 +569,7 @@ onUnmounted(() => {
 </script>
 
 <style scoped>
-/* 容器 */
+/* Thùng chứa */
 .history-database {
   position: relative;
   width: 100%;
@@ -579,13 +579,13 @@ onUnmounted(() => {
   overflow: visible;
 }
 
-/* 无项目时简化显示 */
+/* Hiển thị đơn giản khi không có dự án */
 .history-database.no-projects {
   min-height: auto;
   padding: 40px 0 20px;
 }
 
-/* 技术网格背景 */
+/* Nền lưới kỹ thuật */
 .tech-grid-bg {
   position: absolute;
   top: 0;
@@ -596,7 +596,7 @@ onUnmounted(() => {
   pointer-events: none;
 }
 
-/* 使用CSS背景图案创建固定间距的正方形网格 */
+/* Sử dụng mẫu nền CSS để tạo lưới hình vuông với khoảng cách cố định */
 .grid-pattern {
   position: absolute;
   top: 0;
@@ -607,7 +607,7 @@ onUnmounted(() => {
     linear-gradient(to right, rgba(0, 0, 0, 0.05) 1px, transparent 1px),
     linear-gradient(to bottom, rgba(0, 0, 0, 0.05) 1px, transparent 1px);
   background-size: 50px 50px;
-  /* 从左上角开始定位，高度变化时只在底部扩展，不影响已有网格位置 */
+  /* Bắt đầu từ vị trí góc trên cùng bên trái, khi thay đổi chiều cao, chỉ mở rộng ở dưới cùng, không ảnh hưởng đến vị trí lưới hiện có */
   background-position: top left;
 }
 
@@ -623,7 +623,7 @@ onUnmounted(() => {
   pointer-events: none;
 }
 
-/* 标题区域 */
+/* Vùng tiêu đề */
 .section-header {
   position: relative;
   z-index: 100;
@@ -651,7 +651,7 @@ onUnmounted(() => {
   text-transform: uppercase;
 }
 
-/* 卡片容器 */
+/* Thùng chứa thẻ */
 .cards-container {
   position: relative;
   display: flex;
@@ -659,10 +659,10 @@ onUnmounted(() => {
   align-items: flex-start;
   padding: 0 40px;
   transition: min-height 700ms cubic-bezier(0.23, 1, 0.32, 1);
-  /* min-height 由 JS 动态计算，根据卡片数量自适应 */
+  /* min-height được tính toán động bởi JS, tự thích ứng với số lượng thẻ */
 }
 
-/* 项目卡片 */
+/* Thẻ dự án */
 .project-card {
   position: absolute;
   width: 280px;
@@ -685,7 +685,7 @@ onUnmounted(() => {
   z-index: 1000 !important;
 }
 
-/* 卡片头部 */
+/* Tiêu đề thẻ */
 .card-header {
   display: flex;
   justify-content: space-between;
@@ -703,7 +703,7 @@ onUnmounted(() => {
   font-weight: 500;
 }
 
-/* 功能状态图标组 */
+/* Nhóm biểu tượng trạng thái tính năng */
 .card-status-icons {
   display: flex;
   align-items: center;
@@ -720,17 +720,17 @@ onUnmounted(() => {
   opacity: 1;
 }
 
-/* 不同功能的颜色 */
-.status-icon:nth-child(1).available { color: #3B82F6; } /* 图谱构建 - 蓝色 */
-.status-icon:nth-child(2).available { color: #F59E0B; } /* 环境搭建 - 橙色 */
-.status-icon:nth-child(3).available { color: #10B981; } /* 分析报告 - 绿色 */
+/* Các màu cho các tính năng khác nhau */
+.status-icon:nth-child(1).available { color: #3B82F6; } /* Xây dựng đồ thị - Xanh lam */
+.status-icon:nth-child(2).available { color: #F59E0B; } /* Thiết lập môi trường - Cam */
+.status-icon:nth-child(3).available { color: #10B981; } /* Báo cáo phân tích - Xanh lá */
 
 .status-icon.unavailable {
   color: #D1D5DB;
   opacity: 0.5;
 }
 
-/* 轮数进度显示 */
+/* Hiển thị tiến trình vòng */
 .card-progress {
   display: flex;
   align-items: center;
@@ -744,13 +744,13 @@ onUnmounted(() => {
   font-size: 0.5rem;
 }
 
-/* 进度状态颜色 */
-.card-progress.completed { color: #10B981; }    /* 已完成 - 绿色 */
-.card-progress.in-progress { color: #F59E0B; }  /* 进行中 - 橙色 */
-.card-progress.not-started { color: #9CA3AF; }  /* 未开始 - 灰色 */
+/* Màu trạng thái tiến trình */
+.card-progress.completed { color: #10B981; }    /* Đã hoàn thành - Xanh lá */
+.card-progress.in-progress { color: #F59E0B; }  /* Đang diễn ra - Cam */
+.card-progress.not-started { color: #9CA3AF; }  /* Chưa bắt đầu - Xám */
 .card-status.pending { color: #9CA3AF; }
 
-/* 文件列表区域 */
+/* Vùng danh sách tập tin */
 .card-files-wrapper {
   position: relative;
   width: 100%;
@@ -770,7 +770,7 @@ onUnmounted(() => {
   gap: 4px;
 }
 
-/* 更多文件提示 */
+/* Gợi ý tập tin bổ sung */
 .files-more {
   display: flex;
   align-items: center;
@@ -800,7 +800,7 @@ onUnmounted(() => {
   border-color: #e5e7eb;
 }
 
-/* 简约文件标签样式 */
+/* Kiểu nhãn tập tin tối giản */
 .file-tag {
   display: inline-flex;
   align-items: center;
@@ -818,7 +818,7 @@ onUnmounted(() => {
   min-width: 28px;
 }
 
-/* 低饱和度配色方案 - Morandi色系 */
+/* Sơ đồ màu độ bão hòa thấp - Sắc Morandi */
 .file-tag.pdf { background: #f2e6e6; color: #a65a5a; }
 .file-tag.doc { background: #e6eff5; color: #5a7ea6; }
 .file-tag.xls { background: #e6f2e8; color: #5aa668; }
@@ -839,7 +839,7 @@ onUnmounted(() => {
   letter-spacing: 0.1px;
 }
 
-/* 无文件时的占位 */
+/* Chỗ để trống khi không có tập tin */
 .files-empty {
   display: flex;
   align-items: center;
@@ -860,13 +860,13 @@ onUnmounted(() => {
   letter-spacing: 0.5px;
 }
 
-/* 悬停时文件区域效果 */
+/* Hiệu ứng vùng tập tin khi di chuột */
 .project-card:hover .card-files-wrapper {
   border-color: #d1d5db;
   background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
 }
 
-/* 角落装饰 */
+/* Trang trí góc */
 .corner-mark.top-left-only {
   position: absolute;
   top: 6px;
@@ -879,7 +879,7 @@ onUnmounted(() => {
   z-index: 10;
 }
 
-/* 卡片标题 */
+/* Tiêu đề thẻ */
 .card-title {
   font-family: 'Inter', -apple-system, sans-serif;
   font-size: 0.9rem;
@@ -897,7 +897,7 @@ onUnmounted(() => {
   color: #2563EB;
 }
 
-/* 卡片描述 */
+/* Mô tả thẻ */
 .card-desc {
   font-family: 'Inter', sans-serif;
   font-size: 0.75rem;
@@ -911,7 +911,7 @@ onUnmounted(() => {
   -webkit-box-orient: vertical;
 }
 
-/* 卡片底部 */
+/* Dưới cùng thẻ */
 .card-footer {
   position: relative;
   display: flex;
@@ -925,14 +925,14 @@ onUnmounted(() => {
   font-weight: 500;
 }
 
-/* 日期时间组合 */
+/* Kết hợp ngày giờ */
 .card-datetime {
   display: flex;
   align-items: center;
   gap: 8px;
 }
 
-/* 底部轮数进度显示 */
+/* Hiển thị tiến trình vòng dưới cùng */
 .card-footer .card-progress {
   display: flex;
   align-items: center;
@@ -946,12 +946,12 @@ onUnmounted(() => {
   font-size: 0.5rem;
 }
 
-/* 进度状态颜色 - 底部 */
+/* Màu trạng thái tiến trình - dưới cùng */
 .card-footer .card-progress.completed { color: #10B981; }
 .card-footer .card-progress.in-progress { color: #F59E0B; }
-.card-footer .card-progress.not-started { color: #9CA3AF; }
+.card-footer .card-progress.not-started { color: #9CA3AF; } /* Chưa bắt đầu */
 
-/* 底部装饰线 */
+/* Dòng trang trí dưới cùng */
 .card-bottom-line {
   position: absolute;
   bottom: 0;
@@ -967,7 +967,7 @@ onUnmounted(() => {
   width: 100%;
 }
 
-/* 空状态 */
+/* Trạng thái trống */
 .empty-state, .loading-state {
   display: flex;
   flex-direction: column;
@@ -995,7 +995,7 @@ onUnmounted(() => {
   to { transform: rotate(360deg); }
 }
 
-/* 响应式 */
+/* Đáp ứng */
 @media (max-width: 1200px) {
   .project-card {
     width: 240px;
@@ -1011,7 +1011,7 @@ onUnmounted(() => {
   }
 }
 
-/* ===== 历史回放详情弹窗样式 ===== */
+/* ===== Kiểu cửa sổ bật lên chi tiết phát lại lịch sử ===== */
 .modal-overlay {
   position: fixed;
   top: 0;
@@ -1037,7 +1037,7 @@ onUnmounted(() => {
   box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
 }
 
-/* 动画过渡 */
+/* Quá trình chuyển đổi hoạt hình */
 .modal-enter-active,
 .modal-leave-active {
   transition: opacity 0.3s ease;
@@ -1066,7 +1066,7 @@ onUnmounted(() => {
   opacity: 0;
 }
 
-/* 弹窗头部 */
+/* Tiêu đề cửa sổ bật lên */
 .modal-header {
   display: flex;
   justify-content: space-between;
@@ -1133,7 +1133,7 @@ onUnmounted(() => {
   color: #111827;
 }
 
-/* 弹窗内容 */
+/* Nội dung cửa sổ bật lên */
 .modal-body {
   padding: 24px 32px;
 }
@@ -1175,7 +1175,7 @@ onUnmounted(() => {
   padding-right: 4px;
 }
 
-/* 自定义滚动条样式 */
+/* Kiểu thanh cuộn tùy chỉnh */
 .modal-files::-webkit-scrollbar {
   width: 4px;
 }
@@ -1229,7 +1229,7 @@ onUnmounted(() => {
   text-align: center;
 }
 
-/* 推演回放分割线 */
+/* Dòng phân tách phát lại suy luận */
 .modal-divider {
   display: flex;
   align-items: center;
@@ -1253,7 +1253,7 @@ onUnmounted(() => {
   white-space: nowrap;
 }
 
-/* 导航按钮 */
+/* Nút điều hướng */
 .modal-actions {
   display: flex;
   gap: 16px;
@@ -1320,7 +1320,7 @@ onUnmounted(() => {
   color: #111827;
 }
 
-/* 不可回放提示 */
+/* Gợi ý không thể phát lại */
 .modal-playback-hint {
   display: flex;
   align-items: center;
